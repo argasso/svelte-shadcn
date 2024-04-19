@@ -1,0 +1,16 @@
+query PredictiveSearch($query: String!) {
+  predictiveSearch(query: $query, limit: 10) {
+    products {
+      title
+      handle
+      images(first: 1) {
+        nodes {
+          url
+          height
+          width
+          altText
+        }
+      }
+    }
+  }
+}

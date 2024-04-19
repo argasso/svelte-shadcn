@@ -22,6 +22,8 @@
 		"eslint": "^8.56.0",
 		"eslint-config-prettier": "^9.1.0",
 		"eslint-plugin-svelte": "^2.35.1",
+		"houdini": "^1.2.46",
+		"houdini-svelte": "^1.2.46",
 		"postcss": "^8.4.32",
 		"postcss-load-config": "^5.0.2",
 		"prettier": "^3.1.1",
@@ -34,5 +36,16 @@
 		"typescript": "^5.0.0",
 		"vite": "^5.0.3"
 	},
-	"type": "module"
+	"type": "module",
+	"dependencies": {
+		"@unpic/svelte": "^0.0.51",
+		"bits-ui": "^0.21.4",
+		"clsx": "^2.1.0",
+		"cmdk-sv": "^0.0.17",
+		"mode-watcher": "^0.3.0",
+		"svelte-radix": "^1.1.0",
+		"tailwind-merge": "^2.2.2",
+		"tailwind-variants": "^0.2.1",
+		"vaul-svelte": "^0.3.0"
+	}
 }

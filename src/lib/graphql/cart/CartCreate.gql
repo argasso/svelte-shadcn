@@ -1,0 +1,8 @@
+mutation CartCreate($lineItems: [CartLineInput!]) {
+  cartCreate(input: { lines: $lineItems }) {
+    cart {
+      checkoutUrl
+      id
+    }
+  }
+}

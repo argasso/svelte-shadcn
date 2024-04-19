@@ -1,0 +1,10 @@
+fragment Seo on Metaobject {
+  seo {
+    title {
+      value
+    }
+    description {
+      value
+    }
+  }
+}

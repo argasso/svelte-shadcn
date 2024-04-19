@@ -1,0 +1,62 @@
+query Products(
+  $sortKey: ProductCollectionSortKeys = TITLE
+  $reverse: Boolean = false
+  $filters: [ProductFilter!]
+  $first: Int = 12
+) {
+  collection(handle: "frontpage") {
+    products(sortKey: $sortKey, reverse: $reverse, filters: $filters, first: $first) @paginate {
+      nodes {
+        id
+        title
+        handle
+        images(first: 1) {
+          nodes {
+            url
+            altText
+            height
+            width
+          }
+        }
+        authors: metafield(namespace: "custom", key: "authors") {
+          key
+          value
+          type
+          references(first: 5) {
+            nodes {
+              ... on Metaobject {
+                handle
+                title: field(key: "name") {
+                  value
+                }
+              }
+            }
+          }
+        }
+        variants(first: 3) {
+          nodes {
+            id
+            price {
+              amount
+              currencyCode
+            }
+            discontinued: metafield(namespace: "book", key: "discontinued") {
+              value
+            }
+          }
+        }
+      }
+      filters {
+        id
+        label
+        type
+        values {
+          count
+          id
+          input
+          label
+        }
+      }
+    }
+  }
+}

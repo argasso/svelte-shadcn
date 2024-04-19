@@ -1,0 +1,25 @@
+query Author($handle: MetaobjectHandleInput!) {
+  author: metaobject(handle: $handle) {
+    id
+    handle
+    type
+    title: field(key: "name") {
+      value
+    }
+    description: field(key: "description") {
+      value
+    }
+    image: field(key: "image") {
+      reference {
+        ... on MediaImage {
+          image {
+            altText
+            url
+            width
+            height
+          }
+        }
+      }
+    }
+  }
+}

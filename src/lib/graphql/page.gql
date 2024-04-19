@@ -1,0 +1,37 @@
+query Page($handle: String!) {
+  page: metaobject(handle: { handle: $handle, type: "page" }) {
+    id
+    handle
+    title: field(key: "title") {
+      value
+    }
+    name: field(key: "name") {
+      value
+    }
+    content: field(key: "content") {
+      value
+    }
+    sektioner: field(key: "sektioner") {
+      references(first: 10) {
+        nodes {
+          ...SektionBokgalleri
+        }
+      }
+    }
+    ...Seo
+  }
+  category: metaobject(handle: { handle: $handle, type: "category" }) {
+    id
+    handle
+    title: field(key: "title") {
+      value
+    }
+    name: field(key: "name") {
+      value
+    }
+    content: field(key: "content") {
+      value
+    }
+    ...Seo
+  }
+}

@@ -1,0 +1,48 @@
+query Pages @cache(policy: CacheOrNetwork) {
+  pages: metaobjects(first: 30, type: "page") {
+    nodes {
+      id
+      handle
+      title: field(key: "title") {
+        value
+      }
+      name: field(key: "name") {
+        value
+      }
+      parent: field(key: "parent") {
+        value
+      }
+      seo {
+        title {
+          value
+        }
+        description {
+          value
+        }
+      }
+    }
+  }
+  categories: metaobjects(first: 30, type: "category") {
+    nodes {
+      id
+      handle
+      title: field(key: "title") {
+        value
+      }
+      name: field(key: "name") {
+        value
+      }
+      parent: field(key: "parent") {
+        value
+      }
+      seo {
+        title {
+          value
+        }
+        description {
+          value
+        }
+      }
+    }
+  }
+}

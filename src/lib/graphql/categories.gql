@@ -1,0 +1,22 @@
+query Categories @cache(policy: CacheOrNetwork) {
+  metaobjects(first: 30, type: "Category") {
+    nodes {
+      id
+      handle
+      name: field(key: "name") {
+        value
+      }
+      parent: field(key: "parent") {
+        value
+      }
+      seo {
+        title {
+          value
+        }
+        description {
+          value
+        }
+      }
+    }
+  }
+}

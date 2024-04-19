@@ -1,0 +1,23 @@
+query Metaobject($handle: MetaobjectHandleInput!) {
+  metaobject(handle: $handle) {
+    id
+    handle
+    title: field(key: "title") {
+      value
+    }
+    name: field(key: "name") {
+      value
+    }
+    content: field(key: "content") {
+      value
+    }
+    seo {
+      title {
+        value
+      }
+      description {
+        value
+      }
+    }
+  }
+}

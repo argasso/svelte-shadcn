@@ -1,0 +1,34 @@
+query Authors {
+  metaobjects(first: 30, type: "Author") {
+    nodes {
+      id
+      handle
+      name: field(key: "name") {
+        value
+      }
+      description: field(key: "description") {
+        value
+      }
+      image: field(key: "image") {
+        reference {
+          ... on MediaImage {
+            image {
+              altText
+              url
+              width
+              height
+            }
+          }
+        }
+      }
+      seo {
+        title {
+          value
+        }
+        description {
+          value
+        }
+      }
+    }
+  }
+}
