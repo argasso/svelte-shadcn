@@ -14,6 +14,6 @@
 
 {#if page.sektioner?.references?.nodes}
   {#each page.sektioner.references.nodes as section, index}
-    <SektionBokgalleri {section} class={index % 2 === 0 ? 'bg-surface-50-900-token' : 'bg-surface-100-800-token'} />
+    <SektionBokgalleri {section} class={index % 2 === 0 ? 'bg-background' : 'bg-card'} />
   {/each}
 {/if}

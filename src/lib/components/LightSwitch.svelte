@@ -4,6 +4,7 @@
   import { resetMode, setMode } from 'mode-watcher'
   import { Button } from '$lib/components/ui/button'
   import * as DropdownMenu from '$lib/components/ui/dropdown-menu'
+  import { Star } from 'svelte-radix'
 </script>
 
 <DropdownMenu.Root>
@@ -20,12 +21,34 @@
       <Moon
         class="absolute h-[1.2rem] w-[1.2rem] rotate-90 scale-0 transition-all dark:rotate-0 dark:scale-100"
       />
-      <span class="sr-only">Toggle theme</span>
+      <span class="sr-only">Ändra theme</span>
     </Button>
   </DropdownMenu.Trigger>
   <DropdownMenu.Content align="end">
-    <DropdownMenu.Item on:click={() => setMode('light')}>Light</DropdownMenu.Item>
-    <DropdownMenu.Item on:click={() => setMode('dark')}>Dark</DropdownMenu.Item>
-    <DropdownMenu.Item on:click={() => resetMode()}>System</DropdownMenu.Item>
+    <DropdownMenu.Item class="gap-2" on:click={() => setMode('light')}>
+      <Sun size="20" /> Ljust tema
+    </DropdownMenu.Item>
+    <DropdownMenu.Item class="gap-2" on:click={() => setMode('dark')}>
+      <Moon size="20" /> Mörkt tema
+    </DropdownMenu.Item>
+    <DropdownMenu.Item class="gap-2" on:click={() => resetMode()}>
+      <div class="grid">
+        <Moon class="moon col-start-1 row-start-1" size="20" />
+        <Sun class="sun col-start-1 row-start-1" size="20" />
+        <div
+          class="col-start-1 row-start-1 -ml-1 h-[1px] w-7 rotate-45 self-center rounded-full bg-current"
+        ></div>
+      </div>
+      Systemstandard
+    </DropdownMenu.Item>
   </DropdownMenu.Content>
 </DropdownMenu.Root>
+
+<style lang="postcss">
+  :global(.moon) {
+    clip-path: polygon(0 0, 0% 100%, 100% 100%);
+  }
+  :global(.sun) {
+    clip-path: polygon(0 0, 100% 0, 100% 100%);
+  }
+</style>

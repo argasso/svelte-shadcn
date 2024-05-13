@@ -1,60 +1,81 @@
 <script lang="ts">
   import * as Card from '$lib/components/ui/card'
-  import { fly, slide } from 'svelte/transition'
   import { page } from '$app/stores'
   import { goto } from '$app/navigation'
-  import { graphql, type ProductFilter } from '$houdini'
+  import {
+    fragment,
+    graphql,
+    type Categories$artifact,
+    type Categories$result,
+    type ProductFilter,
+    type Products$result,
+  } from '$houdini'
   import ListFilter from './ListFilter.svelte'
-  import Filter from './ListFilter.svelte'
   import RangeFilter from './RangeFilter.svelte'
-  import { isShopifyFilterKey, parseShopifyFilters } from './shopifyFilters'
-  import ExpandToggle from './ExpandButton.svelte'
-  import ExpandButton from './ExpandButton.svelte'
+  import { isShopifyFilterKey, parseShopifyFilters, type ParsedFilter } from './shopifyFilters'
   import Icons from '../shopify/Icons.svelte'
   import Button from '../ui/button/button.svelte'
+  import * as Accordion from '$lib/components/ui/accordion'
 
-  export let appliedFilters: ProductFilter[]
+  let className = ''
+  export { className as class }
+  export let parsedFilters: ParsedFilter[] = []
 
-  const filtersStore = graphql(`
-    query Filters @load @cache(policy: CacheOrNetwork) {
-      filters: collection(handle: "frontpage") {
-        products(first: 0) {
-          filters {
-            id
-            label
-            type
-            values {
-              count
-              id
-              input
-              label
-            }
-          }
-        }
-      }
-      categories: metaobjects(first: 30, type: "category") {
-        nodes {
-          id
-          title: field(key: "title") {
-            value
-          }
-          parent: field(key: "parent") {
-            value
-          }
-        }
-      }
-    }
-  `)
+  // let filters = parsedFilters
+  // $: filters = parsedFilters && parsedFilters.length > 0 ? parsedFilters : filters
 
-  $: shopifyFilters = $filtersStore.data?.filters?.products.filters ?? []
-  $: hierarchy = $filtersStore.data?.categories.nodes ?? []
-  $: parsedFilters = parseShopifyFilters(shopifyFilters, hierarchy)
-  $: filters = parsedFilters.map((f) => ({
-    ...f,
-    applied: $page.url.searchParams.has(f.values[0].key),
-  }))
+  // export let appliedFilters: ProductFilter[]
+  //  export let filters: NonNullable<Products$result['collection']>['products']['filters'] | null
+  //  export let categoryId: string | undefined = undefined
+  //  export let categories: Categories$result
+
+  // const filtersStore = graphql(`
+  //   query Filters @load @cache(policy: CacheOrNetwork) {
+  //     filters: collection(handle: "frontpage") {
+  //       products(first: 0) {
+  //         filters {
+  //           id
+  //           label
+  //           type
+  //           values {
+  //             count
+  //             id
+  //             input
+  //             label
+  //           }
+  //         }
+  //       }
+  //     }
+  //     categories: metaobjects(first: 30, type: "category") {
+  //       nodes {
+  //         id
+  //         title: field(key: "title") {
+  //           value
+  //         }
+  //         parent: field(key: "parent") {
+  //           value
+  //         }
+  //       }
+  //     }
+  //   }
+  // `)
+
+  // $: shopifyFilters = $filtersStore.data?.filters?.products.filters ?? []
+  // $: hierarchy = categories.metaobjects.nodes ?? []
+  // $: parsedFilters = parseShopifyFilters(filters ?? [], hierarchy, categoryId)
+  //   .filter((f) => f.values.length > 0)
+  //   .map((f) => ({
+  //     ...f,
+  //     applied: $page.url.searchParams.has(f.values[0].key),
+  //   }))
+
+  $: countById = new Map(
+    parsedFilters?.flatMap((f) => f.values.filter((v) => v.count).map((v) => [v.id, v.count])) ??
+      [],
+  )
+
   function resetFilters() {
-    selectedNumber = null
+    selectedId = null
     const query = new URLSearchParams()
     $page.url.searchParams.forEach((value, key) => {
       if (!isShopifyFilterKey(key)) {
@@ -63,60 +84,44 @@
     })
     goto(`?${query.toString()}`)
   }
-  function selectNumber(value: number) {
-    if (selectedNumber === value) {
-      selectedNumber = null
-    } else {
-      selectedNumber = value
-    }
-  }
-  let selectedNumber: number | null = null
+
+  let selectedId: string | null = null
 </script>
 
-<Card.Root>
+<Card.Root class={className}>
   <Card.Header class="flex flex-row items-center justify-between py-2">
     <Card.Title>Urval</Card.Title>
-    {#if appliedFilters?.length > 0}
+    {#if parsedFilters?.some((f) => f.applied)}
       <!-- <div class="flex-grow">
-				<span
-					class="mx-1 mb-1 inline-flex h-5 items-center justify-center rounded-full bg-argasso-600 px-1.5 py-1 text-xs font-bold leading-none text-red-100"
-					>{appliedFilters?.length}</span
-				>
-			</div> -->
-      <Button variant="outline" on:click={resetFilters}>Nollställ</Button>
+        <span
+          class="bg-argasso-600 mx-1 mb-1 inline-flex h-5 items-center justify-center rounded-full px-1.5 py-1 text-xs font-bold leading-none text-red-100"
+          >{appliedFilters?.length}</span
+        >
+      </div> -->
+      <Button variant="outline" size="sm" on:click={resetFilters}>Nollställ</Button>
     {/if}
   </Card.Header>
   <Card.CardContent>
-    {#each filters as filter, index}
-      <div
-        class="border-surface-200-700-token text-surface-600-300-token flex flex-col md:flex-row md:border-t"
-      >
-        <div class="block w-full border-b md:border-none">
-          <div class="flex items-center">
-            <button
-              on:click={() => selectNumber(index)}
-              class="text-md flex flex-grow items-center gap-1 py-3 text-left font-medium"
-            >
-              <span>{filter.label}</span>
+    <Accordion.Root>
+      {#each parsedFilters as filter (filter.id)}
+        <Accordion.Item value={filter.id}>
+          <Accordion.Trigger>
+            <div class="flex items-center gap-1">
+              {filter.label}
               {#if filter.applied}
-                <Icons type="checked" />
-              {/if}
-            </button>
-            <div class="text-gray-400">
-              <ExpandButton bind:selectedNumber myNumber={index} />
-            </div>
-          </div>
-          {#if selectedNumber === index}
-            <div transition:slide>
-              {#if filter.type === 'PRICE_RANGE'}
-                <RangeFilter {filter} />
-              {:else}
-                <ListFilter {filter} />
+                <Icons type="checked" class="text-card-foreground" />
               {/if}
             </div>
-          {/if}
-        </div>
-      </div>
-    {/each}
+          </Accordion.Trigger>
+          <Accordion.Content>
+            {#if filter.type === 'PRICE_RANGE'}
+              <RangeFilter {filter} />
+            {:else}
+              <ListFilter values={filter.values} />
+            {/if}
+          </Accordion.Content>
+        </Accordion.Item>
+      {/each}
+    </Accordion.Root>
   </Card.CardContent>
 </Card.Root>

@@ -1,0 +1,17 @@
+query Filters @cache(policy: CacheOrNetwork) {
+  filters: collection(handle: "frontpage") {
+    products(first: 0) {
+      filters {
+        id
+        label
+        type
+        values {
+          count
+          id
+          input
+          label
+        }
+      }
+    }
+  }
+}

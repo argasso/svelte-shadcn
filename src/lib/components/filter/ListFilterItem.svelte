@@ -7,8 +7,11 @@
   let className = ''
   export { className as class }
   export let param: ArgassoFilterItem
+  // export let countById: Map<string, number>
 
-  const { label, value, children = [], count, key } = param
+  $: ({ label, value, children = [], count, key, id } = param)
+  // $: updatedCount = countById?.get(id ?? '') ?? count
+  $: updatedCount = count
 
   const query = getQueryStore(param.key)
 
@@ -33,7 +36,7 @@
       type="checkbox"
       name={value}
       value={checked}
-      class="m-1 h-6 w-6 rounded-sm text-argasso-600"
+      class="m-1 h-6 w-6 rounded-sm text-primary"
       on:change={handleChange}
       bind:checked
     />
@@ -46,15 +49,14 @@
       </span>
     {/if}
     {#if !checked}
-      <span
-        class="ml-auto mr-3 rounded-full bg-gray-400 px-2 py-1 text-xs leading-none text-gray-50"
-        >{count}</span
+      <span class="ml-auto rounded-full bg-gray-400 px-2 py-1 text-xs leading-none text-gray-50"
+        >{updatedCount}</span
       >
     {/if}
     <!-- </span> -->
   </label>
-  {#if checked}
-    <ul class="mb-0 list-none" transition:slide>
+  {#if checked && children.length > 0}
+    <ul class="mb-0 ml-4 list-none border-l-2 border-primary pl-2" transition:slide>
       {#each children as childParam}
         <svelte:self param={childParam} />
       {/each}

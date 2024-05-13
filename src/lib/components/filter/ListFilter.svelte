@@ -1,27 +1,31 @@
 <script lang="ts">
-  import { type ArgassoFilter } from './shopifyFilters'
+  import { type ArgassoFilter, type ArgassoFilterItem } from './shopifyFilters'
   import ListFilterItem from './ListFilterItem.svelte'
 
-  export let filter: ArgassoFilter
+  export let values: ArgassoFilterItem[]
+  // export let countById: Map<string, number>
+
   let size = 10
   let value = ''
-  $: filtered = filter.values.filter((v) => v.label.toLowerCase().includes(value.toLowerCase())).map((v) => v.value)
+  $: filtered = values
+    .filter((v) => v.label.toLowerCase().includes(value.toLowerCase()))
+    .map((v) => v.value)
   $: visible = filtered.slice(0, size)
 </script>
 
-{#if filter.values.length > 10}
+{#if values.length > 10}
   <input placeholder="Sök..." class="text-xs" type="text" bind:value />
 {/if}
 <ul>
-  {#each filter.values as param}
+  {#each values as param}
     <ListFilterItem class={visible.includes(param.value) ? '' : 'hidden'} {param} />
   {/each}
 </ul>
 {#if filtered.length > size}
   <div class="m-2 text-xs italic">
-    {filter.values.length - size} alternativ visas inte.
+    {values.length - size} alternativ visas inte.
     <button
-      class="italic text-argasso-600"
+      class="text-argasso-600 italic"
       on:click={() => {
         size += 10
       }}>Klicka för fler.</button

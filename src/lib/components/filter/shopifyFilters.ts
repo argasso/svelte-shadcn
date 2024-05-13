@@ -1,4 +1,4 @@
-import type { Filters$result, Products, Products$result } from '$houdini';
+import type { Filters$result, Pages$result, Products, Products$result } from '$houdini';
 import { isNonNil, sortParentsFirst } from '$lib';
 
 type Filter = NonNullable<
@@ -7,26 +7,57 @@ type Filter = NonNullable<
 
 type ProductFilter = NonNullable<Products['input']['filters']>[number];
 type SortKey = NonNullable<Products['input']['sortKey']>;
+type SortOption = { label: string; value: string, sortKey: SortKey; reverse: boolean }
 
-export const sortKeys: { label: string; value: SortKey; reverse: boolean }[] = [
+export const defaultSortKey: SortOption = {
+	label: 'Nyast först',
+	value: '', 
+	sortKey: 'CREATED',
+	reverse: false
+}
+
+export const sortOptions: SortOption[] = [
+	defaultSortKey,
 	{
-		label: 'Nyast först',
-		value: 'CREATED',
+		label: 'Äldst först',
+		value: 'aldst',
+		sortKey: 'CREATED',
+		reverse: true
+	},
+	{
+		label: 'Titel A-Ö',
+		value: 'titel-stigande',
+		sortKey: 'TITLE',
 		reverse: false
 	},
 	{
-		label: 'Äldst först',
-		value: 'CREATED',
+		label: 'Titel Ö-A',
+		value: 'titel-fallande',
+		sortKey: 'TITLE',
 		reverse: true
 	},
 	{
 		label: 'Billigast först',
-		value: 'PRICE',
+		value: 'pris-stigande',
+		sortKey: 'PRICE',
 		reverse: false
 	},
 	{
 		label: 'Dyrast först',
-		value: 'PRICE',
+		value: 'pris-fallande',
+		sortKey: 'PRICE',
+		reverse: true
+	},
+	{
+		label: 'Flest sålda',
+		value: 'salda-stigande', 
+		sortKey: 'BEST_SELLING',
+		reverse: false
+	},
+	{
+		label: 'Få sålda',
+		value: 'salda-fallande',
+		sortKey: 'BEST_SELLING',
 		reverse: true
 	}
 ];
@@ -47,6 +78,7 @@ export const sizeOptions = [
 //   readonly TITLE: "TITLE";
 
 export type ArgassoFilterItem = {
+	id?: string;
 	key: string;
 	label: string;
 	value: string;
@@ -62,7 +94,7 @@ export type ArgassoFilter = {
 	values: ArgassoFilterItem[];
 };
 
-type Hierarchy = NonNullable<Filters$result['categories']>['nodes'];
+type Hierarchy = NonNullable<Pages$result['categories']>['nodes'];
 
 export function getShopifyFilter(searchParams: URLSearchParams): ProductFilter[] {
 	const uniqueKeys = new Set(searchParams.keys());
@@ -92,7 +124,6 @@ function mapToFilters(key: string, values: string[]): ProductFilter[] {
 		}
 	}
 	if (key === 'available') {
-		console.log('mapping available', key, values);
 		return values.map((v) => ({ available: v.toLowerCase() === 'true' }));
 	}
 	if (key === 'tag') {
@@ -132,7 +163,12 @@ function parseValue(value: string | null): number | undefined {
 	}
 }
 
-export function parseShopifyFilters(filters: Filter[], hierarchy: Hierarchy) {
+export type ParsedFilter = Omit<Filter, 'values'> & {
+ values: ArgassoFilterItem[]
+ applied: boolean
+}
+
+export function parseShopifyFilters(filters: Filter[], hierarchy: Hierarchy, searchParams: URLSearchParams, categoryId?: string): ParsedFilter[] {
 	const parentGidByChildGid = new Map(hierarchy.map((h) => [h.id, h.parent?.value]));
 
 	return filters.map(({ id, ...filter }) => {
@@ -140,13 +176,13 @@ export function parseShopifyFilters(filters: Filter[], hierarchy: Hierarchy) {
 		if (id === 'filter.v.m.book.category') {
 			const itemsByGid = new Map<string, ArgassoFilterItem>();
 			let fallbackKey = 'missing';
-			filter.values.forEach(({ label, input, count }) => {
+			filter.values.forEach(({ label, input, count, ...rest }) => {
 				const parsed = JSON.parse(input) as ProductFilter;
 				const query = getKeyValue(parsed);
 				if (query) {
 					const { key, value } = query;
 					fallbackKey = key;
-					itemsByGid.set(longGID(value), { key, label, count, value, children: [] });
+					itemsByGid.set(longGID(value), { id: rest.id, key, label, count, value, children: [], applied: searchParams.getAll(key).some(v => v === value) });
 				} else {
 					console.log('missing gid in filter input value', input);
 				}
@@ -156,22 +192,26 @@ export function parseShopifyFilters(filters: Filter[], hierarchy: Hierarchy) {
 				.map(({ id, title }) => {
 					const value = shortGID(id);
 					const label = title?.value;
-					const child = itemsByGid.get(id) ?? filterItem({ key: fallbackKey, label, value });
+					const child = itemsByGid.get(id) ?? filterItem({ key: fallbackKey, label, value, applied: searchParams.getAll(fallbackKey).some(v => v === value) });
 					if (!itemsByGid.has(id)) {
 						itemsByGid.set(id, child);
 					}
 					const parentId = parentGidByChildGid.get(id) ?? '';
 					const parent = itemsByGid.get(parentId);
-					if (parent) {
+					if (parent && child) {
 						child.value = [parent.value, child.value].join('.');
+						child.applied = searchParams.getAll(child.key).some(v => v === child.value)
 						parent.children?.push(child);
 					} else {
 						return child;
 					}
 				})
 				.filter(isNonNil);
+			if (categoryId){
+				values = findSubtreeById(values, categoryId) ?? []
+			}
 		} else {
-			values = filter.values.flatMap(({ label, input, count }) => {
+			values = filter.values.flatMap(({ label, input, count, ...rest }) => {
 				const parsed = JSON.parse(input) as ProductFilter;
 				if (filter.type === 'PRICE_RANGE') {
 					if (isPrice(parsed)) {
@@ -188,7 +228,8 @@ export function parseShopifyFilters(filters: Filter[], hierarchy: Hierarchy) {
 					const query = getKeyValue(parsed);
 					if (query) {
 						const { key, value } = query;
-						return [{ key, label, count, value }];
+						const applied = searchParams.getAll(key).some(v => v === value)
+						return [{ id: rest.id, key, label, count, value, applied }];
 					} else {
 						console.warn('missing key/value in filter input value', input);
 						return [];
@@ -199,9 +240,28 @@ export function parseShopifyFilters(filters: Filter[], hierarchy: Hierarchy) {
 		return {
 			...filter,
 			id,
-			values
+			values,
+			applied: searchParams.has(values[0].key),
 		};
 	});
+}
+
+function findSubtreeById(values: ArgassoFilterItem[], categoryId: string) {
+	for (const v of values) {
+		if (v?.value.endsWith(shortGID(categoryId))) {
+			return v.children
+		}
+		return findSubtreeById(v.children ?? [], categoryId)
+	}
+}
+
+type Category = Pages$result['categories']['nodes'][number]
+export function makeCategoryPath(categories: Category[], category?: Category): string[] {
+	if (category) {
+		const parent = categories?.find(c => c.id === category.parent?.value)
+		return [...makeCategoryPath(categories, parent), category.id]
+	}
+	return []
 }
 
 type NoUndefinedField<T> = { [P in keyof T]-?: NoUndefinedField<NonNullable<T[P]>> };
@@ -251,11 +311,12 @@ function filterItem(obj: {
 	label?: string | null;
 	count?: number | null;
 	value: string;
+	applied?: boolean
 }): ArgassoFilterItem {
-	const { key, value } = obj;
+	const { key, value, applied } = obj;
 	const label = obj.label ?? 'missing';
 	const count = obj.count ?? 0;
-	return { key, label, count, value, children: [] };
+	return { key, label, count, value, children: [], applied };
 }
 
 const METAOBJECT_PREFIX = 'gid://shopify/Metaobject/';

@@ -1,19 +1,48 @@
 <script lang="ts">
+  import { page as pageStore } from '$app/stores'
   import Filters from '$lib/components/filter/Filters.svelte'
   import GridSelect from '$lib/components/grid/GridSelect.svelte'
   import type { PageData } from './$houdini'
   import Icons from '$lib/components/shopify/Icons.svelte'
-  import { sizeOptions } from '$lib/components/filter/shopifyFilters'
+  import {
+    parseShopifyFilters,
+    sizeOptions,
+    sortOptions,
+  } from '$lib/components/filter/shopifyFilters'
   import BookCard2 from '$lib/components/BookCard2.svelte'
   import { convertSchemaToHtml } from '$lib/richtext/shopifyRichText'
   import LinkList from '$lib/components/LinkList.svelte'
   import { resolveHrefs } from '$lib'
+  import Pagination from '$lib/components/grid/Pagination.svelte'
+  import Pagination2 from '$lib/components/grid/Pagination2.svelte'
+  import { getSingleValueQueryStore } from '$lib/stores/URLSearchParamsStore'
+  import Button from '$lib/components/ui/button/button.svelte'
+  import ChevronLeft from 'svelte-radix/ChevronLeft.svelte'
+  import ChevronRight from 'svelte-radix/ChevronRight.svelte'
+  import * as Card from '$lib/components/ui/card'
+  import MobileFilter from '$lib/components/filter/MobileFilter.svelte'
+  import { Separator } from '$lib/components/ui/separator'
+  import AppliedFilterButton from '$lib/components/filter/AppliedFilterButton.svelte'
+  import { PendingValue, type Product$result, type Products$result } from '$houdini'
+  import { Skeleton } from '$lib/components/ui/skeleton'
+
+  type ProductsResult = NonNullable<Products$result['collection']>['products']
 
   export let data: PageData
 
-  $: ({ Products, isFiltering, appliedFilters, Pages, Page } = data)
-  $: products = $Products.data?.collection?.products.nodes ?? []
-  $: filters = $Products.data?.collection?.products.filters ?? []
+  let cursor = getSingleValueQueryStore('cursor')
+  let direction = getSingleValueQueryStore('direction')
+
+  $: ({ Products, Pages, Page, isFiltering, appliedFilters, perPage } = data)
+  $: console.log('appliedFilters', appliedFilters)
+
+  let products: ProductsResult['nodes'] = []
+  $: products = $Products.data?.collection?.products.nodes ?? products // Keep old data until new arrive
+
+  let filters: ProductsResult['filters'] = []
+  $: filters = $Products.data?.collection?.products.filters ?? filters // Keep old data until new arrive
+  $: console.log('filters', filters)
+
   $: totalCount =
     filters
       ?.find((f) => f.id === 'filter.v.availability')
@@ -33,33 +62,16 @@
       name: name ?? title ?? '?',
       href,
     }))
-
-  // $: ({ title, name, content } = page)
+  $: categoryId = $Page.data?.category?.id
   $: heading = page?.title?.value ?? page?.name?.value
   $: html = page?.content?.value ? convertSchemaToHtml(JSON.parse(page?.content?.value)) : undefined
-
-  const sortOptions = [
-    {
-      value: 'BEST_SELLING',
-      title: 'bäst säljande',
-    },
-    {
-      value: 'CREATED',
-      title: 'nyast först',
-    },
-    {
-      value: 'PRICE',
-      title: 'pris',
-    },
-    {
-      value: 'RELEVANCE',
-      title: 'relevans',
-    },
-    {
-      value: 'TITLE',
-      title: 'titel',
-    },
-  ]
+  $: parsedFilters = parseShopifyFilters(
+    filters,
+    $Pages.data?.categories.nodes ?? [],
+    $pageStore.url.searchParams,
+    categoryId,
+  )
+  $: console.log('parsedFilters', parsedFilters)
 </script>
 
 <!-- <Modal title="Urval" open={$isOverlayOpen} on:close={() => isOverlayOpen.set(false)}>
@@ -89,58 +101,64 @@
     {#if html}
       <div>{@html html}</div>
     {/if}
-    <div
-      class="grid flex-auto grid-cols-2 justify-items-start gap-x-4 gap-y-10 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6"
-    >
-      {#if products.length > 0}
-        {#each products as p (p.id)}
-          <div class="self-end">
-            <BookCard2 bookThumb={p} />
-          </div>
-        {/each}
-      {/if}
-    </div>
-    <div class="flex items-center gap-3">
-      <GridSelect queryKey="size" suffix="per sida" options={sizeOptions} class="" />
 
-      <button
-        class="btn-square px-1"
-        on:click={() => Products.loadPreviousPage({ last: 12, before: startCursor || undefined })}
-        disabled={!hasPreviousPage}
-      >
-        <Icons type="arrowLeft" />
-      </button>
-      <button
-        class="btn-square px-1"
-        on:click={() => Products.loadNextPage({ first: 12, after: endCursor || undefined })}
-        disabled={!hasNextPage}
-      >
-        <Icons type="arrowRight" />
-      </button>
-    </div>
-  </main>
-  <aside class="flex-0 w-64">
-    <LinkList class="w-full lg:w-64" title="Avdelningar" links={categories} />
-    <Filters {appliedFilters} />
-  </aside>
-</div>
-
-<div class="container mb-10">
-  <div class="flex items-center justify-between bg-slate-50 p-2">
-    <h4 class="my-0 flex-1">
+    <!-- <h2 class="my-0 mt-10 flex-1">
       {totalCount} böcker
       {#if isFiltering}
         i urvalet
       {:else}
         i denna avdelning
       {/if}
-    </h4>
-    <div class="flex flex-1 flex-col gap-3 sm:flex-row">
+    </h2> -->
+    <div class="my-4 flex flex-1 gap-3 pt-10">
       <!-- <FilterButton class="lg:hidden" {criterias} /> -->
-      <GridSelect queryKey="sort" prefix="Visa" prefixSelected="Visar" options={sortOptions} />
-
-      <!-- <Pagination class="hidden lg:flex" pageing={$bookStore} /> -->
+      <GridSelect class="w-36" key="sort" options={sortOptions} label="Välj ordning" />
+      <MobileFilter class="md:hidden" {parsedFilters} />
+      {#each appliedFilters as appliedFilter}
+        <AppliedFilterButton {filters} {appliedFilter}></AppliedFilterButton>
+      {/each}
     </div>
-  </div>
+    <div
+      class="grid flex-auto grid-cols-2 justify-items-start gap-x-4 gap-y-14 sm:grid-cols-3 xl:grid-cols-4 2xl:grid-cols-6"
+    >
+      {#if products.length > 0}
+        {#each products as p}
+          <div class="self-end">
+            <BookCard2 bookThumb={p} loading={$Products.fetching} />
+          </div>
+        {/each}
+      {/if}
+    </div>
+    <div class="flex items-center gap-3">
+      <GridSelect key="size" suffix="per sida" options={sizeOptions} class="w-32" />
+
+      <Button
+        variant="ghost"
+        class="gap-1 pl-2.5"
+        on:click={() =>
+          Products.loadPreviousPage({ last: perPage, before: startCursor || undefined })}
+        disabled={!hasPreviousPage}
+      >
+        <ChevronLeft class="h-4 w-4" />
+        <span>Föregående</span>
+      </Button>
+      <Button
+        variant="ghost"
+        class="gap-1 pr-2.5"
+        on:click={() => Products.loadNextPage({ first: perPage, after: endCursor || undefined })}
+        disabled={!hasNextPage}
+      >
+        <span>Nästa</span>
+        <ChevronRight class="h-4 w-4" />
+      </Button>
+    </div>
+  </main>
+  <aside class="flex-0 hidden w-64 min-w-64 md:block">
+    <LinkList
+      class="mb-3 w-full bg-background shadow-sm lg:w-64"
+      title="Underavdelningar"
+      links={categories}
+    />
+    <Filters class="sticky top-16 bg-background shadow-sm" {parsedFilters} />
+  </aside>
 </div>
-<div class="container mb-10"></div>

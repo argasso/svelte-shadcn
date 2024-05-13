@@ -20,13 +20,13 @@
     class={cn(
       'fixed z-50 flex border bg-background p-1',
       direction === 'bottom'
-        ? 'bottom-0 left-0 right-0 h-[75%] flex-col rounded-t-[10px] md:h-[50%]'
+        ? 'bottom-0 left-0 right-0 h-[90%] flex-col rounded-t-[10px] md:h-[50%]'
         : '',
       direction === 'top'
-        ? 'left-0 right-0 top-0 h-[75%] flex-col rounded-b-[10px] md:h-[50%]'
+        ? 'left-0 right-0 top-0 h-[90%] flex-col rounded-b-[10px] md:h-[50%]'
         : '',
       direction === 'left'
-        ? 'bottom-0 left-0 top-0 w-[90%] flex-row rounded-r-[10px] sm:w-[70%] md:w-[60%] lg:w-[50%]'
+        ? 'bottom-0 left-0 top-0 w-[90%] flex-row-reverse rounded-r-[10px] sm:w-[70%] md:w-[60%] lg:w-[50%]'
         : '',
       direction === 'right'
         ? 'bottom-0 right-0 top-0 w-[90%] flex-row rounded-l-[10px] sm:w-[70%] md:w-[60%] lg:w-[50%]'
@@ -41,7 +41,7 @@
         direction === 'bottom' ? 'flex-col' : '',
         direction === 'top' ? 'flex-col-reverse' : '',
         direction === 'left' ? 'flex-row-reverse' : '',
-        direction === 'right' ? 'flex-row ' : '',
+        direction === 'right' ? 'flex-row' : '',
       )}
     >
       <div
@@ -56,13 +56,19 @@
           builders={[builder]}
           variant="ghost"
           size="icon"
-          class="absolute right-4 top-4 rounded-full"
+          class={cn(
+            'absolute rounded-full',
+            direction === 'top' ? 'right-4 top-4' : '',
+            direction === 'bottom' ? 'right-4' : 'top-4',
+            direction === 'right' ? 'right-4 top-4' : '',
+            direction === 'left' ? 'left-4' : 'top-4',
+          )}
           ><Cross2 />
           <span class="sr-only">Close</span>
         </Button>
       </DrawerPrimitive.Close>
 
-      <div class="h-full w-full p-2 sm:p-6">
+      <div class="h-full w-full p-12">
         <slot />
       </div>
     </div>

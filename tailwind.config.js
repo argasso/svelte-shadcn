@@ -69,7 +69,10 @@ const config = {
 				sans: [...fontFamily.sans]
 			}
 		}
-	}
+	},
+	plugins: [
+		require('@tailwindcss/forms'),
+	]
 };
 
 export default config;

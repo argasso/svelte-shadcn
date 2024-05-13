@@ -57,7 +57,7 @@
   }
 </script>
 
-<Drawer.Root shouldScaleBackground={false} direction={'right'}>
+<Drawer.Root shouldScaleBackground={false} direction="right">
   <Drawer.Trigger asChild let:builder>
     <Button builders={[builder]} variant="header" size="icon" class="relative flex-none">
       {#if quantity > 0}
@@ -88,7 +88,7 @@
         </div>
       {:else}
         <h2 class="mt-8 text-center text-2xl">{quantity} böcker i varukorgen</h2>
-        <ScrollArea class="min-h-0 flex-1 rounded-md border">
+        <ScrollArea class="min-h-0 flex-1 rounded-md border p-3">
           {#each items as item, i (i)}
             {#if i > 0}
               <Separator class="my-3" />
@@ -101,7 +101,9 @@
               />
               <div class="flex flex-1 flex-col justify-between">
                 <div class="flex-1">
-                  <h3>{item.node.merchandise.product.title}</h3>
+                  <h3 class="font-sans text-lg font-bold">
+                    {item.node.merchandise.product.title}
+                  </h3>
                   {#if item.node.merchandise.title !== 'Default Title'}
                     <p class="text-sm">{item.node.merchandise.title}</p>
                   {/if}
@@ -143,7 +145,7 @@
                     <Trash />
                   </Button>
                   <div class="ml-auto">
-                    <h3>{formatPrice(item.node.cost.totalAmount)}</h3>
+                    <h3 class="m-0">{formatPrice(item.node.cost.totalAmount)}</h3>
                   </div>
                 </div>
               </div>

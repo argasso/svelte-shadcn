@@ -20,6 +20,8 @@
   import { ModeWatcher } from 'mode-watcher'
   import LightSwitch from '$lib/components/LightSwitch.svelte'
   import Cart from '$lib/components/shopify/Cart.svelte'
+  import MobileNav from '$lib/components/MobileNav.svelte'
+  import { Toaster } from '$lib/components/ui/sonner'
 
   export let data
 
@@ -95,16 +97,22 @@
 
 <svelte:window on:scroll={onScroll} />
 
+<Toaster />
+
 <ModeWatcher />
-<div data-vaul-drawer-wrapperx>
+
+<div data-vaul-drawer-wrapperx class="flex h-dvh flex-col">
   <header
     class:scrolled={scrollY > 0}
-    class="gradient sticky top-0 flex h-[var(--header-height)] items-stretch"
+    class="gradient sticky top-0 z-10 flex items-stretch"
     style:transform="translateY({-top}px)"
     bind:this={headerEl}
   >
-    <div class=" container flex justify-between">
+    <div class="container flex h-[var(--header-height)] justify-between">
       <nav class="flex items-stretch gap-4">
+        <div class="flex items-center md:hidden">
+          <MobileNav {menuItems} />
+        </div>
         <NavLink href="/" exact={true}>
           <Logo class="h-10 w-28" />
         </NavLink>
@@ -122,11 +130,11 @@
     </div>
   </header>
 
-  <main>
+  <main class="flex-1">
     <slot />
   </main>
 
-  <Footer />
+  <Footer class="flex-0" />
 </div>
 
 <style lang="postcss">

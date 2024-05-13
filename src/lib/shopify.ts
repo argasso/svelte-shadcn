@@ -2,6 +2,7 @@ import { CartStore, CartLinesUpdateStore, CartCreateStore, CartLinesAddStore } f
 import { derived, writable } from 'svelte/store';
 import { cartQuantity } from './stores/store';
 import { parseJSON } from '.';
+import { toast } from "svelte-sonner";
 
 export const cartStore = new CartStore();
 const cartCreateStore = new CartCreateStore();
@@ -84,6 +85,7 @@ export function getCheckoutUrl() {
 }
 
 export async function addToCart(variantId: string, info?: AddToCartInfo) {
+
 	addToCartLoading.set(variantId);
 	if (info) {
 		addToCartInfo.set(info);
@@ -102,6 +104,15 @@ export async function addToCart(variantId: string, info?: AddToCartInfo) {
 	addToCartLoading.set(undefined);
 	failOnErrors('Failed to add to cart', response.errors);
 
+	toast.success("Lade följande bok i varukorgen", {
+		position: 'top-right',
+		icon: undefined,
+		description: `${info?.title}`,
+		action: {
+			label: "Visa Varukorg",
+			onClick: () => console.info("Undo")
+		}
+	})
 	return refreshCart();
 }
 

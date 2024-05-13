@@ -1,11 +1,11 @@
-import { load_Pages } from '$houdini'
+import { load_Filters } from '$houdini'
 
 export const load = async (event) => {
-  const { Pages } = await load_Pages({
+  const { Filters } = await load_Filters({
     event,
   })
 
   return {
-    Pages,
+    Filters,
   }
 }

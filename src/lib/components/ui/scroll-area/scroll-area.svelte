@@ -22,7 +22,7 @@
   class={cn('relative overflow-hidden', className)}
 >
   <ScrollAreaPrimitive.Viewport class="h-full w-full rounded-[inherit]">
-    <ScrollAreaPrimitive.Content class="p-6">
+    <ScrollAreaPrimitive.Content class="p-0">
       <slot />
     </ScrollAreaPrimitive.Content>
   </ScrollAreaPrimitive.Viewport>

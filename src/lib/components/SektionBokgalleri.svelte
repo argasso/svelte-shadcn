@@ -32,7 +32,7 @@
 </script>
 
 <Section title={$data.rubrik?.value || 'Boktips'} class={className}>
-  <div class="grid grid-cols-1 gap-4 md:grid-cols-3">
+  <div class="grid grid-cols-1 gap-14 md:grid-cols-3">
     {#each $data.bocker?.references?.nodes ?? [] as book}
       <BookCardPromo {book} />
     {/each}

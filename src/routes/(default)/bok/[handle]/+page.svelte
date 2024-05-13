@@ -66,12 +66,13 @@
 <div class="container">
   <Breadcrumb crumbs={[]} />
   {#if product && selectedVariant}
-    <section class="overflow-hidden py-4">
+    <section class=" py-4">
       <div
         class="grid-row-gap grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr_auto_auto] gap-6 sm:grid-rows-[auto_auto_auto_1fr]"
       >
-        <div class="row-span-2 sm:row-span-4">
+        <div class="row-span-2 h-full sm:row-span-4">
           <ShopifyImage
+            class="sm:sticky sm:top-16"
             image={selectedVariant.image}
             alt={`Omslag för ${product?.title} - ${selectedVariant.selectedOptions.map((o) => `${o.name}: ${o.value}`).join(', ')}`}
           />

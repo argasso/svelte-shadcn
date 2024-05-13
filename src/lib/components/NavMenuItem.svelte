@@ -1,35 +1,30 @@
 <script lang="ts">
-  import { isMenuOpen } from '$lib/stores/store'
-
   import { slide, fade } from 'svelte/transition'
-  import ExpandToggle from './ExpandToggle.svelte'
-  import type { MenuItem } from '../../../routes/+layout'
+  import type { MenuItem } from '../../routes/+layout.svelte'
+  import ExpandButton from './filter/ExpandButton.svelte'
+  import { Close } from './ui/drawer'
 
   export let menuItem: MenuItem
 
   $: ({ name, href, children } = menuItem)
 
   let open = false
-  let onClick = (): void => {
-    $isMenuOpen = false
-  }
 </script>
 
-<li class="border-b border-[color:var(--menu-border-color)]">
-  <div class="flex" class:open>
-    <a class="flex-grow py-4" {href} on:click={onClick}>
-      {name}
-    </a>
+<li class="border-b border-border">
+  <div class="flex items-center" class:open>
+    <Close class="" asChild let:builder>
+      <a class="flex-grow py-4" {href} use:builder.action {...builder}>
+        {name}
+      </a>
+    </Close>
     {#if children.length}
-      <ExpandToggle bind:open />
+      <ExpandButton bind:open />
     {/if}
   </div>
   {#if children.length && open}
-    <div class="border-t border-[color:var(--menu-border-color)]" transition:fade>
-      <ul
-        class="m-0 list-none border-l-4 border-[color:var(--menu-accent-color)] p-0 pl-3.5"
-        transition:slide
-      >
+    <div class="border-t border-border" transition:fade>
+      <ul class="m-0 list-none border-l-4 border-primary p-0 pl-3.5" transition:slide>
         {#each children as child}
           <svelte:self menuItem={child} />
         {/each}

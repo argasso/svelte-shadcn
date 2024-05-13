@@ -1,5 +1,5 @@
 <script lang="ts">
-  import type { MenuItem } from '../../../routes/+layout'
+  import type { MenuItem } from '../../routes/+layout.svelte'
   import NavMenuItem from './NavMenuItem.svelte'
 
   let className = ''
@@ -8,16 +8,9 @@
 </script>
 
 <ul class="list-none pl-0 {className}">
-  <div class="border-b border-[color:var(--menu-border-color)]">
+  <div class="border-b border-border">
     {#each menuItems as menuItem}
       <NavMenuItem {menuItem} />
     {/each}
   </div>
 </ul>
-
-<style lang="postcss">
-  :root {
-    --menu-accent-color: theme('textColor.argasso2.100');
-    --menu-border-color: theme('borderColor.gray.300');
-  }
-</style>

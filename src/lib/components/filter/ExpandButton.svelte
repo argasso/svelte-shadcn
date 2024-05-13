@@ -1,96 +1,46 @@
 <script lang="ts">
-  export let selectedNumber: number | null
-  export let myNumber: number
+  import { cn } from '$lib/utils'
+  import { createEventDispatcher } from 'svelte'
+  import Button from '../ui/button/button.svelte'
+
+  const dispatch = createEventDispatcher<{ toggle: boolean }>()
+
+  export let open = false
   export let ariaLabel = 'expand sub menu'
-  export let onClick = (): void => {
-    if (selectedNumber === myNumber) {
-      selectedNumber = null
-    } else {
-      selectedNumber = myNumber
-    }
+
+  function onClick(e: MouseEvent) {
+    e.stopPropagation()
+    open = !open
+    dispatch('toggle', open)
   }
 </script>
 
-<button
-  class="flex p-3 pb-4 pt-2"
-  on:click|stopPropagation={onClick}
-  aria-expanded={selectedNumber === myNumber}
+<Button
+  variant="ghost"
+  size="icon"
+  class="flex items-center justify-center"
+  on:click={onClick}
+  aria-expanded={open}
   aria-label={ariaLabel}
 >
-  <div class="expand-toggle flex-1">
-    <span class:open={selectedNumber === myNumber} class="expand-toggle-left" />
+  <div class="flex h-6 w-6">
+    <div class="flex items-center overflow-hidden">
+      <span
+        class={cn([
+          'h-0 w-3 border border-current bg-current transition-transform duration-300 ease-linear',
+          'translate-x-[3px] rotate-45 rounded-l-full',
+          open && '-rotate-45',
+        ])}
+      ></span>
+    </div>
+    <div class="flex items-center overflow-hidden">
+      <span
+        class={cn([
+          'h-0 w-3 border border-current bg-current transition-transform duration-300 ease-linear',
+          '-translate-x-[3px] -rotate-45 rounded-r-full',
+          open && 'rotate-45',
+        ])}
+      ></span>
+    </div>
   </div>
-  <div class="expand-toggle flex-1">
-    <span class:open={selectedNumber === myNumber} class="expand-toggle-right" />
-  </div>
-</button>
-
-<style lang="postcss">
-  @keyframes left-open {
-    from {
-      transform: rotate(45deg);
-    }
-    to {
-      transform: rotate(-45deg);
-    }
-  }
-
-  @keyframes left-close {
-    from {
-      transform: rotate(-45deg);
-    }
-    to {
-      transform: rotate(45deg);
-    }
-  }
-
-  @keyframes right-open {
-    from {
-      transform: rotate(-45deg);
-    }
-    to {
-      transform: rotate(45deg);
-    }
-  }
-
-  @keyframes right-close {
-    from {
-      transform: rotate(45deg);
-    }
-    to {
-      transform: rotate(-45deg);
-    }
-  }
-
-  .expand-toggle {
-    overflow: hidden;
-  }
-
-  .expand-toggle-left,
-  .expand-toggle-right {
-    display: inline-block;
-    position: relative;
-    background: currentColor;
-    height: 3px;
-    width: 13px;
-    align-items: stretch;
-  }
-
-  .expand-toggle-left {
-    margin-right: -3px;
-    animation-timing-function: linear;
-    animation: left-close 0.4s forwards;
-    &.open {
-      animation: left-open 0.4s forwards;
-    }
-  }
-
-  .expand-toggle-right {
-    margin-left: -3px;
-    animation-timing-function: linear;
-    animation: right-close 0.4s forwards;
-    &.open {
-      animation: right-open 0.4s forwards;
-    }
-  }
-</style>
+</Button>

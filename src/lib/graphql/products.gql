@@ -2,9 +2,9 @@ query Products(
   $sortKey: ProductCollectionSortKeys = TITLE
   $reverse: Boolean = false
   $filters: [ProductFilter!]
-  $first: Int = 12
+  $first: Int
 ) {
-  collection(handle: "frontpage") {
+  collection(handle: "frontpage") @cache(policy: NetworkOnly) {
     products(sortKey: $sortKey, reverse: $reverse, filters: $filters, first: $first) @paginate {
       nodes {
         id

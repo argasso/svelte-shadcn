@@ -22,7 +22,7 @@
       return { name, href }
     })
 
-  $: loading = $Pages.fetching // || true
+  $: loading = $Pages.fetching || true
 </script>
 
 <div class="container">

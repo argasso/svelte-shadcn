@@ -9,6 +9,7 @@
   type BookThumb = NonNullable<Products$result['collection']>['products']['nodes'][number]
   export let bookThumb: BookThumb
   export let width: number = 160
+  export let loading = false
 
   $: ({ title, handle, variants } = bookThumb)
   $: href = bookUrl(handle)
@@ -26,7 +27,7 @@
   }
 </script>
 
-<div style="widthx: {width}px" class="mt-auto w-48">
+<div class:loading class="mt-auto w-48 opacity-100">
   <div class="grid w-40">
     <a class="col-start-1 row-start-1 hover:no-underline" {href}>
       <ShopifyImage class="rounded bg-gray-100" {image} {width} />
@@ -55,9 +56,9 @@
       </Button>
     {/if}
   </div>
-  <div class="h-20 pt-2">
+  <div class="h-28 pt-2">
     <a {href}>
-      <span class="my-1 text-base font-medium">{title}</span>
+      <h3 class="my-1 font-sans text-base font-semibold">{title}</h3>
     </a>
     <div class="leading-4x">
       {#each authors as author, index}
@@ -73,6 +74,10 @@
 </div>
 
 <style lang="postcss">
+  .loading {
+    @apply opacity-50 transition-opacity;
+  }
+
   .ribbon {
     --ribbon-radius: 0.5em; /* control the ribbon shape (the radius) */
     --ribbon-color: hsl(var(--primary));
