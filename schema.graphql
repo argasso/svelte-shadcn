@@ -800,7 +800,7 @@ type CartBuyerIdentity {
   Preferences can be used to populate relevant payment fields in the checkout flow.
   
   """
-  walletPreferences: [String!]!
+  walletPreferences: [String!]! @deprecated(reason: "Use `preferences` instead.")
 }
 
 """
@@ -833,15 +833,6 @@ input CartBuyerIdentityInput {
 
   """The phone number of the buyer that is interacting with the cart."""
   phone: String
-
-  """
-  A set of wallet preferences tied to the buyer that is interacting with the cart.
-  Preferences can be used to populate relevant payment fields in the checkout flow.
-    Accepted value: `["shop_pay"]`.
-  
-  The input must not contain more than `250` values.
-  """
-  walletPreferences: [String!]
 }
 
 """Return type for `cartBuyerIdentityUpdate` mutation."""
@@ -5719,7 +5710,7 @@ type MailingAddress implements Node {
   province: String
 
   """
-  The two-letter code for the region.
+  The alphanumeric code for the region.
   
   For example, ON.
   
@@ -8077,7 +8068,7 @@ type ProductOption implements Node {
   name: String!
 
   """The corresponding value to the product option name."""
-  values: [String!]!
+  values: [String!]! @deprecated(reason: "Use `optionValues` instead.")
 }
 
 """The price range of the product."""
