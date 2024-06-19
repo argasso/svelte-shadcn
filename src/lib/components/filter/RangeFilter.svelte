@@ -1,23 +1,28 @@
 <script lang="ts">
   import { Slider } from '$lib/components/ui/slider'
-  import type { ArgassoFilter } from './shopifyFilters'
+  import { getShortKey, isPrice, type EnhancedFilter } from './shopifyFilters'
   import { getQueryStore } from '$lib/stores/URLSearchParamsStore'
+  import type { ProductFilter } from '$houdini'
 
-  export let filter: ArgassoFilter
+  export let filter: EnhancedFilter
 
-  const key = filter.values.at(0)?.key ?? 'price'
+  const key = getShortKey(filter.id) ?? 'price'
   const query = getQueryStore(key)
 
-  const [min, max] = filter.values.map((v) => parseFloat(v.value))
+  $: parsed = JSON.parse(filter.values[0].input) as ProductFilter
+  $: initialRange = isPrice(parsed) ? parsed.price : { min: 0, max: 300 }
+  let min: number
+  $: min = min ?? initialRange.min
+  let max: number
+  $: max = max ?? initialRange.max
 
   let range = $query?.length === 2 ? $query?.map((v) => parseFloat(v)) : [min, max]
-  $: console.log('$query', $query)
-
-  let timer: NodeJS.Timeout
 
   $: unset = range[0] === min && range[1] === max
   $: range && debouncedQuery()
   $: $query?.length !== 2 && resetRange()
+
+  let timer: NodeJS.Timeout
 
   function debouncedQuery() {
     clearTimeout(timer)
@@ -43,8 +48,17 @@
 </script>
 
 <div class="pb-2">
+  <div class:unset class="p-2">
+    <Slider
+      bind:value={range}
+      {min}
+      {max}
+      step={1}
+      on:change={(v) => console.log('slider change', v)}
+    />
+  </div>
   <div class="flex justify-between">
-    <div>
+    <div class="w-20">
       <label class="text-sm font-light" for={`${filter.id}-min`}>som lägst</label>
       <input
         class="h-8 w-20 rounded"
@@ -54,7 +68,7 @@
         bind:value={range[0]}
       />
     </div>
-    <div>
+    <div class="w-20">
       <label class="text-sm font-light" for={`${filter.id}-max`}>som högst</label>
       <input
         class="h-8 w-20 rounded"
@@ -64,15 +78,5 @@
         bind:value={range[1]}
       />
     </div>
-  </div>
-  <div class:unset class="p-2">
-    <Slider
-      bind:value={range}
-      {min}
-      {max}
-      step={1}
-      on:change={(v) => console.log('slider change', v)}
-    />
-    <!-- <RangeSlider bind:values={range} on:stop={stop} {min} {max} range pushy /> -->
   </div>
 </div>

@@ -1,10 +1,9 @@
 <script lang="ts">
   import { Button } from '$lib/components/ui/button/index.js'
   import * as Drawer from '$lib/components/ui/drawer/index.js'
-  import { type ProductFilter, type Products$result } from '$houdini'
   import Filters from './Filters.svelte'
   import ScrollArea from '../ui/scroll-area/scroll-area.svelte'
-  import type { ParsedFilter } from './shopifyFilters'
+  import type { EnhancedFilter } from './shopifyFilters'
 
   let className = ''
   export { className as class }
@@ -12,7 +11,7 @@
   // export let appliedFilters: ProductFilter[]
   // export let categoryId: string | undefined = undefined
 
-  export let parsedFilters: ParsedFilter[]
+  export let filters: EnhancedFilter[]
 </script>
 
 <Drawer.Root shouldScaleBackground={false} direction="bottom">
@@ -31,7 +30,7 @@
     <div class="mx-auto flex h-full max-w-md flex-col gap-4">
       <ScrollArea class="min-h-0 flex-1 rounded-md border p-0">
         <div class="mx-auto max-w-md justify-center">
-          <Filters class="w-full" {parsedFilters}></Filters>
+          <Filters class="w-full" {filters}></Filters>
         </div>
       </ScrollArea>
     </div>

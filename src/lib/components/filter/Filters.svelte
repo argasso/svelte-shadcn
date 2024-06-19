@@ -2,24 +2,20 @@
   import * as Card from '$lib/components/ui/card'
   import { page } from '$app/stores'
   import { goto } from '$app/navigation'
-  import {
-    fragment,
-    graphql,
-    type Categories$artifact,
-    type Categories$result,
-    type ProductFilter,
-    type Products$result,
-  } from '$houdini'
   import ListFilter from './ListFilter.svelte'
   import RangeFilter from './RangeFilter.svelte'
-  import { isShopifyFilterKey, parseShopifyFilters, type ParsedFilter } from './shopifyFilters'
+  import { isShopifyFilterKey, type EnhancedFilter } from './shopifyFilters'
   import Icons from '../shopify/Icons.svelte'
   import Button from '../ui/button/button.svelte'
   import * as Accordion from '$lib/components/ui/accordion'
 
   let className = ''
   export { className as class }
-  export let parsedFilters: ParsedFilter[] = []
+  export let filters: EnhancedFilter[] = []
+  // export let categories: Pages$result['categories']['nodes']
+  // export let categoryId: string | undefined
+
+  // $: enhancedFilters = enhanceFilters(filters, $page.url.searchParams)
 
   // let filters = parsedFilters
   // $: filters = parsedFilters && parsedFilters.length > 0 ? parsedFilters : filters
@@ -69,10 +65,10 @@
   //     applied: $page.url.searchParams.has(f.values[0].key),
   //   }))
 
-  $: countById = new Map(
-    parsedFilters?.flatMap((f) => f.values.filter((v) => v.count).map((v) => [v.id, v.count])) ??
-      [],
-  )
+  // $: countById = new Map(
+  //   parsedFilters?.flatMap((f) => f.values.filter((v) => v.count).map((v) => [v.id, v.count])) ??
+  //     [],
+  // )
 
   function resetFilters() {
     selectedId = null
@@ -91,7 +87,7 @@
 <Card.Root class={className}>
   <Card.Header class="flex flex-row items-center justify-between py-2">
     <Card.Title>Urval</Card.Title>
-    {#if parsedFilters?.some((f) => f.applied)}
+    {#if filters.some((f) => f.active)}
       <!-- <div class="flex-grow">
         <span
           class="bg-argasso-600 mx-1 mb-1 inline-flex h-5 items-center justify-center rounded-full px-1.5 py-1 text-xs font-bold leading-none text-red-100"
@@ -103,12 +99,12 @@
   </Card.Header>
   <Card.CardContent>
     <Accordion.Root>
-      {#each parsedFilters as filter (filter.id)}
+      {#each filters as filter (filter.id)}
         <Accordion.Item value={filter.id}>
           <Accordion.Trigger>
             <div class="flex items-center gap-1">
               {filter.label}
-              {#if filter.applied}
+              {#if filter.active}
                 <Icons type="checked" class="text-card-foreground" />
               {/if}
             </div>
@@ -117,7 +113,7 @@
             {#if filter.type === 'PRICE_RANGE'}
               <RangeFilter {filter} />
             {:else}
-              <ListFilter values={filter.values} />
+              <ListFilter {filter} />
             {/if}
           </Accordion.Content>
         </Accordion.Item>

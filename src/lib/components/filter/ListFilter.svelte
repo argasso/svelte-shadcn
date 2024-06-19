@@ -1,29 +1,32 @@
 <script lang="ts">
-  import { type ArgassoFilter, type ArgassoFilterItem } from './shopifyFilters'
+  import { getShortValue, type EnhancedFilter } from './shopifyFilters'
   import ListFilterItem from './ListFilterItem.svelte'
 
-  export let values: ArgassoFilterItem[]
-  // export let countById: Map<string, number>
+  export let filter: EnhancedFilter
 
   let size = 10
   let value = ''
-  $: filtered = values
+  $: filtered = filter.values
     .filter((v) => v.label.toLowerCase().includes(value.toLowerCase()))
-    .map((v) => v.value)
+    .map(getShortValue)
   $: visible = filtered.slice(0, size)
 </script>
 
-{#if values.length > 10}
+{#if filter.values.length > 10}
   <input placeholder="Sök..." class="text-xs" type="text" bind:value />
 {/if}
 <ul>
-  {#each values as param}
-    <ListFilterItem class={visible.includes(param.value) ? '' : 'hidden'} {param} />
+  {#each filter.values as item}
+    <ListFilterItem
+      class={visible.includes(getShortValue(item)) ? '' : 'hidden'}
+      key={filter.key}
+      {item}
+    />
   {/each}
 </ul>
 {#if filtered.length > size}
   <div class="m-2 text-xs italic">
-    {values.length - size} alternativ visas inte.
+    {filter.values.length - size} alternativ visas inte.
     <button
       class="text-argasso-600 italic"
       on:click={() => {

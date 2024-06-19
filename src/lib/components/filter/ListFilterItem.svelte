@@ -1,31 +1,26 @@
 <script lang="ts">
   import { getQueryStore } from '$lib/stores/URLSearchParamsStore'
   import { slide } from 'svelte/transition'
-  import type { ArgassoFilterItem } from './shopifyFilters'
   import ReadingLevel from '../ReadingLevel.svelte'
+  import { getDecendants, type EnhancedFilterItem } from './shopifyFilters'
 
   let className = ''
   export { className as class }
-  export let param: ArgassoFilterItem
-  // export let countById: Map<string, number>
+  export let key: string
+  export let item: EnhancedFilterItem
 
-  $: ({ label, value, children = [], count, key, id } = param)
-  // $: updatedCount = countById?.get(id ?? '') ?? count
-  $: updatedCount = count
+  const query = getQueryStore(key)
 
-  const query = getQueryStore(param.key)
-
+  $: ({ label, value, count, children = [] } = item)
   $: checked = $query.includes(value)
+  $: decendantValues = getDecendants(item).map((i) => i.value)
 
   function handleChange(event: any) {
     const { name, checked } = event.target as HTMLInputElement
     if (checked) {
       query.update((values) => [...values, name])
     } else {
-      query.update((values) => {
-        const newValues = values.filter((v) => !v.startsWith(value))
-        return newValues
-      })
+      query.update((values) => values.filter((v) => !decendantValues.includes(v)))
     }
   }
 </script>
@@ -40,8 +35,7 @@
       on:change={handleChange}
       bind:checked
     />
-    <!-- <span class="overflow-x-hidden pl-0 text-sm font-light "> -->
-    {#if key === 'vm.book.reading_level'}
+    {#if key === 'reading_level'}
       <ReadingLevel level={parseInt(label)} />
     {:else}
       <span class="pl-1">
@@ -50,15 +44,14 @@
     {/if}
     {#if !checked}
       <span class="ml-auto rounded-full bg-gray-400 px-2 py-1 text-xs leading-none text-gray-50"
-        >{updatedCount}</span
+        >{count}</span
       >
     {/if}
-    <!-- </span> -->
   </label>
   {#if checked && children.length > 0}
     <ul class="mb-0 ml-4 list-none border-l-2 border-primary pl-2" transition:slide>
-      {#each children as childParam}
-        <svelte:self param={childParam} />
+      {#each children as child}
+        <svelte:self {key} item={child} />
       {/each}
     </ul>
   {/if}
