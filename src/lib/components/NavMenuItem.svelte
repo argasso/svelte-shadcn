@@ -1,8 +1,8 @@
 <script lang="ts">
   import { slide, fade } from 'svelte/transition'
-  import type { MenuItem } from '../../routes/+layout.svelte'
   import ExpandButton from './filter/ExpandButton.svelte'
   import { Close } from './ui/drawer'
+  import type { MenuItem } from '$lib/menu'
 
   export let menuItem: MenuItem
 

@@ -1,0 +1,32 @@
+query MainMenu {
+  menu: metaobject(handle: { handle: "startsida", type: "page" }) {
+    ...MenuFragment @mask_disable
+    children: field(key: "sub_pages") {
+      references(first: 10) {
+        nodes {
+          ... on Metaobject {
+            ...MenuFragment @mask_disable
+            children: field(key: "sub_pages") {
+              references(first: 10) {
+                nodes {
+                  ... on Metaobject {
+                    ...MenuFragment @mask_disable
+                    children: field(key: "sub_pages") {
+                      references(first: 10) {
+                        nodes {
+                          ... on Metaobject {
+                            ...MenuFragment @mask_disable
+                          }
+                        }
+                      }
+                    }
+                  }
+                }
+              }
+            }
+          }
+        }
+      }
+    }
+  }
+}

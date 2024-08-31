@@ -1,9 +1,5 @@
-<script lang="ts">
-  import { Image, type ImageProps } from '@unpic/svelte'
-  import PlaceholderBook from './PlaceholderBook.svelte'
-  import type { HTMLImgAttributes } from 'svelte/elements'
-
-  type Image =
+<script context="module" lang="ts">
+  export type ImageProp =
     | {
         url: string
         altText: string | null
@@ -12,9 +8,15 @@
       }
     | null
     | undefined
+</script>
+
+<script lang="ts">
+  import { Image, type ImageProps } from '@unpic/svelte'
+  import PlaceholderBook from './PlaceholderBook.svelte'
+  import type { HTMLImgAttributes } from 'svelte/elements'
 
   interface $$Props extends HTMLImgAttributes {
-    image: Image
+    image: ImageProp
     width?: number
     height?: number
   }
@@ -22,7 +24,14 @@
   $: ({ image, width, height, ...rest } = $$restProps)
   $: props = imageProps(image, width, height)
 
-  function imageProps(image: NonNullable<Image>, scaleWidth?: number, scaleHeight?: number): ImageProps {
+  function imageProps(
+    image: ImageProp,
+    scaleWidth?: number,
+    scaleHeight?: number,
+  ): ImageProps | undefined {
+    if (!image) {
+      return
+    }
     const layout = 'constrained'
     const { url: src, altText: alt = '' } = image
     if (image.width && image.height) {
@@ -43,8 +52,8 @@
   }
 </script>
 
-{#if image}
+{#if image && props}
   <Image {...rest} {...props} />
 {:else}
-  <PlaceholderBook {width} />
+  <PlaceholderBook {...rest} {width} />
 {/if}

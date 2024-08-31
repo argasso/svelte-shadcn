@@ -1,11 +1,12 @@
 <script lang="ts">
-  import { navigating } from '$app/stores'
   import Logo from '$lib/components/logo/Logo.svelte'
   import Wave from './Wave.svelte'
+  import { Button } from './ui/button'
+  import { Input } from './ui/input'
 </script>
 
+<Wave class="gradient-inverted" inversed />
 <footer class="gradient text-gray-100">
-  <Wave inversed />
   <div class="container">
     <div class="order-first flex flex-wrap text-center md:text-left">
       <nav class="mb-10 w-full md:w-1/2 lg:w-1/3">
@@ -24,7 +25,9 @@
         <h3>Villkor</h3>
         <ul class="list-none p-0 text-red-100">
           <li class="mb-2">
-            <a href="/integritetspolicy" class="mb-2 text-red-100"> Försäljnings och leveransvilkor </a>
+            <a href="/integritetspolicy" class="mb-2 text-red-100">
+              Försäljnings och leveransvilkor
+            </a>
           </li>
           <li class="mb-2">
             <a href="/integritetspolicy" class="mb-2 text-red-100">Policy för cookies</a>
@@ -39,42 +42,38 @@
         <div
           class="flex flex-wrap items-end justify-center md:flex-nowrap md:justify-start lg:flex-wrap xl:flex-nowrap"
         >
-          <div class="relative mr-2 w-40 sm:mr-4 sm:w-auto lg:mr-0 xl:mr-4">
+          <div class="relative mr-2 sm:mr-4 sm:w-auto lg:mr-0 xl:mr-4">
             <form
               id="mc-embedded-subscribe-form"
-              class="validate"
               action="https://argasso.us18.list-manage.com/subscribe/post?u=77df9b40f7b88d80d2730b6bb&amp;id=b391a49e94"
               method="post"
               name="mc-embedded-subscribe-form"
               target="_blank"
+              class="flex w-full max-w-sm items-center space-x-2"
             >
-              <div id="mc_embed_signup_scroll" class="flex flex-col gap-3 md:flex-row">
-                <div style="position: absolute; left: -5000px;">
-                  <input tabindex="-1" name="b_77df9b40f7b88d80d2730b6bb_b391a49e94" type="hidden" value="" />
-                </div>
-                <input
-                  id="mce-EMAIL"
-                  class="rounded border border-gray-300 bg-argasso-100 px-3 py-1 text-base leading-8 text-black outline-none transition-colors duration-200 ease-in-out focus:bg-white focus:ring-2 focus:ring-red-200 md:mr-3"
-                  name="EMAIL"
-                  type="email"
-                  value=""
-                  placeholder="E-postadress"
-                />
-                <input
-                  id="mc-embedded-subscribe"
-                  class="focus:shadow-outline rounded-full bg-argasso-100 px-8 py-3 font-bold text-gray-800 shadow-lg hover:bg-argasso-50 active:bg-white"
-                  name="subscribe"
-                  type="submit"
-                  value="Prenumerera"
-                />
-              </div>
+              <Input
+                id="mce-EMAIL"
+                name="EMAIL"
+                type="email"
+                placeholder="Din e-postadress"
+                class="bg-white text-black"
+              />
+              <Button
+                id="mc-embedded-subscribe"
+                name="subscribe"
+                type="submit"
+                class="drop-shadow-md">Prenumerera</Button
+              >
             </form>
           </div>
         </div>
       </div>
       <div class="w-full border-t border-red-300 text-gray-100 opacity-50">
         <div class="flex items-center">
-          <a href="/" class="title-font flex items-center justify-center font-medium text-red-200 md:justify-start">
+          <a
+            href="/"
+            class="title-font flex items-center justify-center font-medium text-red-200 md:justify-start"
+          >
             <Logo class="h-16 w-32" />
           </a>
           <div class="mt-4 text-sm text-red-200 sm:ml-6 sm:mt-0">

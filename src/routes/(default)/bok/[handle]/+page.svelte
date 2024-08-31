@@ -1,20 +1,19 @@
 <script lang="ts">
   import BookDetails from '$lib/components/BookDetails.svelte'
   import Breadcrumb from '$lib/components/Breadcrumbs.svelte'
-  import { notEmpty, onlyMetaobjects, parseJSON, publishMonth, formatPrice } from '$lib'
+  import { notEmpty, onlyMetaobjects, publishMonth, formatPrice } from '$lib'
   import type { PageData } from './$houdini'
-  import GridTile from '$lib/components/GridTile.svelte'
   import Icons from '$lib/components/shopify/Icons.svelte'
   import ShopifyImage from '$lib/components/shopify/ShopifyImage.svelte'
-  import Spinner from '$lib/components/Spinner.svelte'
   import { addToCart, isCartLoading } from '$lib/shopify'
   import Button from '$lib/components/ui/button/button.svelte'
+  import Price from '$lib/components/Price.svelte'
+  import Authors from '$lib/components/Authors.svelte'
 
   export let data: PageData
 
   $: ({ Product, metafieldLabels } = data)
   $: product = $Product.data?.product
-  $: authors = onlyMetaobjects(product?.authors?.references?.nodes)
   $: variants =
     product?.variants.nodes.map((variant) => {
       const isbn = variant.barcode
@@ -66,27 +65,31 @@
 <div class="container">
   <Breadcrumb crumbs={[]} />
   {#if product && selectedVariant}
-    <section class=" py-4">
+    <section class="py-12">
       <div
-        class="grid-row-gap grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr_auto_auto] gap-6 sm:grid-rows-[auto_auto_auto_1fr]"
+        class="grid grid-cols-[1fr_2fr] grid-rows-[auto_1fr_auto_auto] gap-10 sm:grid-rows-[auto_auto_auto_1fr]"
       >
         <div class="row-span-2 h-full sm:row-span-4">
-          <ShopifyImage
-            class="sm:sticky sm:top-16"
-            image={selectedVariant.image}
-            alt={`Omslag för ${product?.title} - ${selectedVariant.selectedOptions.map((o) => `${o.name}: ${o.value}`).join(', ')}`}
-          />
+          <div class="book grid">
+            <ShopifyImage
+              class="col-start-1 row-start-1 rounded-r-sm sm:top-16"
+              image={selectedVariant.image}
+              alt={`Omslag för ${product?.title} - ${selectedVariant.selectedOptions.map((o) => `${o.name}: ${o.value}`).join(', ')}`}
+            />
+            <div class="book-overlay col-start-1 row-start-1"></div>
+          </div>
         </div>
         <div class="">
           <div class="flex items-center justify-between">
             <h2
               class="title-font my-1 text-xs uppercase tracking-widest sm:text-sm md:text-base lg:text-lg"
             >
-              {#each authors as author}
+              <Authors book={product} />
+              <!-- {#each authors as author}
                 <a class="author" href={`/information/forfattare/${author.handle}`}
                   >{author.title?.value}</a
                 >
-              {/each}
+              {/each} -->
             </h2>
             <!-- <div class="ml-2 flex gap-2 border-l-2 border-gray-200 py-2 pl-2 text-lg sm:text-2xl">
               <a href="" class="text-gray-500">
@@ -136,9 +139,10 @@
               </a> -->
           {:else}
             <div class="flex flex-col items-center justify-end gap-4 sm:flex-row">
-              <span class="text-argasso2-200 text-xl font-semibold"
-                >{formatPrice(selectedVariant.price)}</span
-              >
+              <Price
+                class="text-argasso2-200 text-xl font-semibold"
+                price={selectedVariant.price}
+              />
               <Button size="lg" on:click={addProduct}>
                 <span>Lägg i varukorg</span>
                 <div class="mr-2 flex h-6 w-6 items-center text-xl">
@@ -178,9 +182,7 @@
                   <div class="flex-grow">
                     {variant.selectedOptions.map((o) => o.value).join(' - ')}
                   </div>
-                  <div class="flex-none">
-                    {formatPrice(variant.price)}
-                  </div>
+                  <Price class="flex-none" price={variant.price} />
                 </button>
               {/each}
             </div>
@@ -334,5 +336,36 @@
 <style>
   .author ~ .author::before {
     content: ', ';
+  }
+
+  .book {
+    box-shadow: 2px 4px 16px rgba(0, 0, 0, 0.12);
+  }
+
+  .book:hover {
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.16);
+    transform: scale(1.01);
+  }
+
+  .book-overlay {
+    border-radius: 0 3px 3px 0;
+    background: linear-gradient(
+      to right,
+      rgba(0, 0, 0, 0.02) 0%,
+      rgba(0, 0, 0, 0.05) 0.75%,
+      rgba(255, 255, 255, 0.5) 1%,
+      rgba(255, 255, 255, 0.6) 1.3%,
+      rgba(255, 255, 255, 0.5) 1.4%,
+      rgba(255, 255, 255, 0.3) 1.5%,
+      rgba(255, 255, 255, 0.3) 2.4%,
+      rgba(0, 0, 0, 0.05) 2.7%,
+      rgba(0, 0, 0, 0.05) 3.5%,
+      rgba(255, 255, 255, 0.3) 4%,
+      rgba(255, 255, 255, 0.3) 4.5%,
+      rgba(244, 244, 244, 0.1) 5.4%,
+      rgba(244, 244, 244, 0.1) 99%,
+      rgba(144, 144, 144, 0.2) 100%
+    );
+    box-shadow: inset 0 -1px 4px rgba(0, 0, 0, 0.12);
   }
 </style>

@@ -1,16 +1,12 @@
 <script lang="ts">
-  import * as Card from '$lib/components/ui/card'
-  import { page } from '$app/stores'
   import { goto } from '$app/navigation'
+  import { page } from '$app/stores'
+  import * as Accordion from '$lib/components/ui/accordion'
+  import Icons from '../shopify/Icons.svelte'
   import ListFilter from './ListFilter.svelte'
   import RangeFilter from './RangeFilter.svelte'
   import { isShopifyFilterKey, type EnhancedFilter } from './shopifyFilters'
-  import Icons from '../shopify/Icons.svelte'
-  import Button from '../ui/button/button.svelte'
-  import * as Accordion from '$lib/components/ui/accordion'
 
-  let className = ''
-  export { className as class }
   export let filters: EnhancedFilter[] = []
   // export let categories: Pages$result['categories']['nodes']
   // export let categoryId: string | undefined
@@ -84,40 +80,24 @@
   let selectedId: string | null = null
 </script>
 
-<Card.Root class={className}>
-  <Card.Header class="flex flex-row items-center justify-between py-2">
-    <Card.Title>Urval</Card.Title>
-    {#if filters.some((f) => f.active)}
-      <!-- <div class="flex-grow">
-        <span
-          class="bg-argasso-600 mx-1 mb-1 inline-flex h-5 items-center justify-center rounded-full px-1.5 py-1 text-xs font-bold leading-none text-red-100"
-          >{appliedFilters?.length}</span
-        >
-      </div> -->
-      <Button variant="outline" size="sm" on:click={resetFilters}>Nollställ</Button>
-    {/if}
-  </Card.Header>
-  <Card.CardContent>
-    <Accordion.Root>
-      {#each filters as filter (filter.id)}
-        <Accordion.Item value={filter.id}>
-          <Accordion.Trigger>
-            <div class="flex items-center gap-1">
-              {filter.label}
-              {#if filter.active}
-                <Icons type="checked" class="text-card-foreground" />
-              {/if}
-            </div>
-          </Accordion.Trigger>
-          <Accordion.Content>
-            {#if filter.type === 'PRICE_RANGE'}
-              <RangeFilter {filter} />
-            {:else}
-              <ListFilter {filter} />
-            {/if}
-          </Accordion.Content>
-        </Accordion.Item>
-      {/each}
-    </Accordion.Root>
-  </Card.CardContent>
-</Card.Root>
+<Accordion.Root>
+  {#each filters as filter (filter.id)}
+    <Accordion.Item value={filter.id}>
+      <Accordion.Trigger>
+        <div class="flex items-center gap-1 text-sm">
+          {filter.label}
+          {#if filter.active}
+            <Icons type="checked" class="text-card-foreground" />
+          {/if}
+        </div>
+      </Accordion.Trigger>
+      <Accordion.Content>
+        {#if filter.type === 'PRICE_RANGE'}
+          <RangeFilter {filter} />
+        {:else}
+          <ListFilter {filter} />
+        {/if}
+      </Accordion.Content>
+    </Accordion.Item>
+  {/each}
+</Accordion.Root>

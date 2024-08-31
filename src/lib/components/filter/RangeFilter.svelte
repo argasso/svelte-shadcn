@@ -61,6 +61,7 @@
     <div class="w-20">
       <label class="text-sm font-light" for={`${filter.id}-min`}>som lägst</label>
       <input
+        data-vaul-no-drag
         class="h-8 w-20 rounded"
         type="number"
         name="min"
@@ -71,6 +72,7 @@
     <div class="w-20">
       <label class="text-sm font-light" for={`${filter.id}-max`}>som högst</label>
       <input
+        data-vaul-no-drag
         class="h-8 w-20 rounded"
         type="number"
         name="max"

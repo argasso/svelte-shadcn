@@ -18,27 +18,12 @@ query Products(
             width
           }
         }
-        authors: metafield(namespace: "custom", key: "authors") {
-          key
-          value
-          type
-          references(first: 5) {
-            nodes {
-              ... on Metaobject {
-                handle
-                title: field(key: "name") {
-                  value
-                }
-              }
-            }
-          }
-        }
+        ...AuthorsFragment
         variants(first: 3) {
           nodes {
             id
             price {
-              amount
-              currencyCode
+              ...PriceFragment @mask_disable
             }
             discontinued: metafield(namespace: "book", key: "discontinued") {
               value

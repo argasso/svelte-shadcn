@@ -1,5 +1,6 @@
 import type { Pages$result, Products, Products$result } from '$houdini';
 import { isNonNil } from '$lib';
+import { flatten, type MenuItem } from '$lib/menu';
 
 export type Filter = NonNullable<
 	NonNullable<Products$result>['collection']
@@ -13,7 +14,7 @@ export const defaultSortKey: SortOption = {
 	label: 'Nyast först',
 	value: '', 
 	sortKey: 'CREATED',
-	reverse: false
+	reverse: true
 }
 
 export const sortOptions: SortOption[] = [
@@ -22,7 +23,7 @@ export const sortOptions: SortOption[] = [
 		label: 'Äldst först',
 		value: 'aldst',
 		sortKey: 'CREATED',
-		reverse: true
+		reverse: false
 	},
 	{
 		label: 'Titel A-Ö',
@@ -54,12 +55,6 @@ export const sortOptions: SortOption[] = [
 		sortKey: 'BEST_SELLING',
 		reverse: false
 	},
-	{
-		label: 'Få sålda',
-		value: 'salda-fallande',
-		sortKey: 'BEST_SELLING',
-		reverse: true
-	}
 ];
 
 export const DEFAULT_PAGE_SIZE = 12;
@@ -424,18 +419,21 @@ function getPriceRange(input: string, queryValues: string[]): string[] {
 		}
 }
 
-export function getCategoryFilterAsTree(filter: EnhancedFilter, hierarchy: Hierarchy, categoryId?: string): EnhancedFilter {
+export function getCategoryFilterAsTree(filter: EnhancedFilter, hierarchy: MenuItem[]): EnhancedFilter {
 	if (filter.id !== 'filter.v.m.book.category') {
 		return filter
 	}
-	const itemsById = new Map(filter.values.map(v => [
+const menuItems = hierarchy.flatMap(h => flatten(h))
+
+	const parentByChildId = new Map(menuItems.map(h => [
+		shortGID(h.id),
+		shortGID(h.parent?.id)
+	]))
+	const includedValues = filter.values.filter(v => menuItems.some(i => shortGID(i.id) === v.value))
+	
+	const itemsById = new Map(includedValues.map(v => [
 		v.value,
 		{...v, children: [] as EnhancedFilterItem[]}
-	]))
-
-	const parentByChildId = new Map(hierarchy.map(h => [
-		shortGID(h.id),
-		shortGID(h.parent?.value)
 	]))
 
 	let values: EnhancedFilterItem[] = []
@@ -448,9 +446,9 @@ export function getCategoryFilterAsTree(filter: EnhancedFilter, hierarchy: Hiera
 		}
 	})
 
-	if (categoryId){
-		values = itemsById.get(shortGID(categoryId))?.children ?? []
-	}
+	// if (categoryId){
+	// 	values = itemsById.get(shortGID(categoryId))?.children ?? []
+	// }
 
 	return {
 		...filter,
@@ -458,8 +456,9 @@ export function getCategoryFilterAsTree(filter: EnhancedFilter, hierarchy: Hiera
 	}
 }
 
-export function getActiveShopifyFilters(filters: Filter[], categories: Hierarchy, searchParams: URLSearchParams) {
-	const parentIdByChildId = new Map(categories.map(({id, parent}) => [shortGID(id), shortGID(parent?.value)]))
+export function getActiveShopifyFilters(filters: Filter[], menuStructure: MenuItem | undefined, searchParams: URLSearchParams): ProductFilter[] {
+	
+	const parentIdByChildId = new Map(flatten(menuStructure).map(({id, parent}) => [shortGID(id), shortGID(parent?.id)]))
 
 	return filters.map(f => getEnhancedFilter(f, searchParams)).flatMap(f => f.values
 		.filter(v => v.active)

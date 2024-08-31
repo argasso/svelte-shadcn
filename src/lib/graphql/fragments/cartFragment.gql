@@ -1,0 +1,46 @@
+fragment CartFragment on Cart {
+  id
+  checkoutUrl
+  updatedAt
+  totalQuantity
+  cost {
+    totalAmount {
+      ...PriceFragment
+    }
+  }
+  lines(first: 100) {
+    edges {
+      node {
+        id
+        quantity
+        cost {
+          subtotalAmount {
+            ...PriceFragment
+          }
+          totalAmount {
+            ...PriceFragment
+          }
+        }
+        merchandise {
+          ... on ProductVariant {
+            id
+            title
+            product {
+              images(first: 1) {
+                edges {
+                  node {
+                    url
+                    altText
+                    width
+                    height
+                  }
+                }
+              }
+              title
+            }
+          }
+        }
+      }
+    }
+  }
+}

@@ -1,8 +1,10 @@
 mutation CartCreate($lineItems: [CartLineInput!]) {
   cartCreate(input: { lines: $lineItems }) {
+    userErrors {
+      ...CartUserErrorFragment @mask_disable
+    }
     cart {
-      checkoutUrl
-      id
+      ...CartFragment @mask_disable
     }
   }
 }

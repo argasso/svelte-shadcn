@@ -1,4 +1,4 @@
-query Filters @blocking @cache(policy: CacheOrNetwork) {
+query Filters @blocking @cache(policy: NetworkOnly) {
   filters: collection(handle: "frontpage") {
     products(first: 0) {
       filters {

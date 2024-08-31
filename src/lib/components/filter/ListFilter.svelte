@@ -28,7 +28,7 @@
   <div class="m-2 text-xs italic">
     {filter.values.length - size} alternativ visas inte.
     <button
-      class="text-argasso-600 italic"
+      class="italic text-primary"
       on:click={() => {
         size += 10
       }}>Klicka för fler.</button

@@ -1,17 +1,14 @@
 <script lang="ts">
-  import { onMount } from 'svelte'
-  import * as Command from '$lib/components/ui/command'
-  import { Button } from '$lib/components/ui/button'
-  import { cn } from '$lib/utils.js'
   import { goto } from '$app/navigation'
   import { PredictiveSearchStore, type PredictiveSearch$result } from '$houdini'
   import { bookUrl } from '$lib'
-  import ShopifyImage from './ShopifyImage.svelte'
-  import Separator from '../ui/separator/separator.svelte'
+  import { Button } from '$lib/components/ui/button'
+  import * as Command from '$lib/components/ui/command'
+  import { onMount } from 'svelte'
   import { MagnifyingGlass } from 'svelte-radix'
+  import Separator from '../ui/separator/separator.svelte'
+  import ShopifyImage from './ShopifyImage.svelte'
 
-  export { className as class }
-  let className: string = ''
   let open = false
 
   onMount(() => {
@@ -68,7 +65,7 @@
   ]
 </script>
 
-<Button
+<!-- <Button
   variant="outline"
   class={cn(
     'relative hidden justify-start text-sm text-muted-foreground sm:inline-flex sm:w-40',
@@ -84,11 +81,11 @@
   >
     <span class="text-xs">⌘</span>K
   </kbd>
-</Button>
+</Button> -->
 <Button
   variant="header"
   size="icon"
-  class="relative flex-none sm:hidden"
+  class="relative"
   on:click={() => (open = true)}
   {...$$restProps}
 >

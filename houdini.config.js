@@ -3,7 +3,7 @@
 /** @type {import('houdini').ConfigFile} */
 const config = {
   watchSchema: {
-    url: 'https://argasso.myshopify.com/api/2024-01/graphql',
+    url: 'https://argasso.myshopify.com/api/2024-10/graphql',
     headers: {
       'X-Shopify-Storefront-Access-Token': 'ff151810f966c1536e2d3b4fd437f38e',
     },
@@ -12,9 +12,10 @@ const config = {
     'houdini-svelte': {},
   },
   defaultPaginateMode: 'SinglePage',
-  features: {
-    imperativeCache: true,
-  },
+  // defaultCachePolicy: 'NetworkOnly',
+  // features: {
+  //   imperativeCache: true,
+  // },
   scalars: {
     HTML: {
       type: 'string',
@@ -45,6 +46,15 @@ const config = {
     },
     JSON: {
       type: 'string',
+      unmarshal(val) {
+        return val
+      },
+      marshal(date) {
+        return date
+      },
+    },
+    DateTime: {
+      type: "string",
       unmarshal(val) {
         return val
       },

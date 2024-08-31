@@ -74,22 +74,34 @@ function isParent(node: TreeLike, child: TreeLike) {
 	return node.id === child.parent?.value;
 }
 
-export function onlyProducts<T extends { __typename: string }>(nodes: T[] | undefined) {
+export function onlyProducts<T extends { __typename: string }>(nodes: T[] | null | undefined) {
 	return (nodes ?? []).filter(
 		(e): e is Extract<T, { __typename: 'Product' }> => e.__typename === 'Product'
 	);
 }
 
-export function onlyMetaobjects<T extends { __typename: string }>(nodes: T[] | undefined) {
+export function onlyMetaobjects<T extends { __typename: string }>(nodes: T[] | null | undefined) {
 	return (nodes ?? []).filter(
 		(e): e is Extract<T, { __typename: 'Metaobject' }> => e.__typename === 'Metaobject'
 	);
 }
 
-export function onlyMediaImages<T extends { __typename: string }>(nodes: T[] | undefined) {
+export function onlyMediaImages<T extends { __typename: string }>(nodes: T[] | null | undefined) {
 	return (nodes ?? []).filter(
 		(e): e is Extract<T, { __typename: 'MediaImage' }> => e.__typename === 'MediaImage'
 	);
+}
+
+export function onlyProduct<T extends { __typename: string }>(object: T | null | undefined) {
+	return object ? onlyProducts([object]).at(0) : undefined
+}
+
+export function onlyMetaobject<T extends { __typename: string }>(object: T | null | undefined) {
+	return object ? onlyMetaobjects([object]).at(0) : undefined
+}
+
+export function onlyMediaImage<T extends { __typename: string }>(object: T | null | undefined) {
+	return object ? onlyMediaImages([object]).at(0) : undefined
 }
 
 export function notEmpty<TValue>(value: TValue | null | undefined): value is TValue {

@@ -1,8 +1,10 @@
 mutation CartLinesUpdate($cartId: ID!, $lines: [CartLineUpdateInput!]!) {
   cartLinesUpdate(cartId: $cartId, lines: $lines) {
+    cart {
+      ...CartFragment @mask_disable
+    }
     userErrors {
-      field
-      message
+      ...CartUserErrorFragment @mask_disable
     }
   }
 }

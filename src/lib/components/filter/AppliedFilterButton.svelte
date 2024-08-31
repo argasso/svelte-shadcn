@@ -33,7 +33,7 @@
   }
 </script>
 
-<Button on:click={remove}>
+<Button on:click={remove} size="sm" variant="ghost" class="h-6 rounded-full border p-2">
   {label}
   <Cross2 class="rounded-full opacity-40" size="16" />
 </Button>

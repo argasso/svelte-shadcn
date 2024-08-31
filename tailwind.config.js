@@ -9,18 +9,18 @@ const config = {
 		container: {
 			center: true,
 			padding: {
-				DEFAULT: '0.625rem',
+				DEFAULT: '1.25rem',
 				sm: '2rem',
-				md: '5rem',
-				lg: '4.5rem',
-				xl: '6rem',
-				'2xl': '6rem'
+				md: '2rem',
+				lg: '2rem',
+				xl: '2rem',
+				'2xl': '2rem'
 			}
 		},
 		extend: {
 			screens: {
 				xs: '420px',
-				'2xl': '1700px'
+				// '2xl': '1700px'
 			},
 			colors: {
 				border: 'hsl(var(--border) / <alpha-value>)',

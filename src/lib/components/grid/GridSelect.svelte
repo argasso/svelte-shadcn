@@ -30,13 +30,13 @@
   <Select.Trigger class={className}>
     <Select.Value {placeholder} />
   </Select.Trigger>
-  <Select.Content>
+  <Select.Content sameWidth={false}>
     <Select.Group>
       {#if label}
         <Select.Label>{label}</Select.Label>
       {/if}
       {#each opts as item}
-        <Select.Item value={item.value} label={item.label}></Select.Item>
+        <Select.Item class="whitespace-nowrap" value={item.value} label={item.label}></Select.Item>
       {/each}
     </Select.Group>
   </Select.Content>

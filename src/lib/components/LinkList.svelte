@@ -10,11 +10,11 @@
 
 {#if links.length > 0}
   <Card.Root class={className}>
-    <Card.Header>
+    <Card.Header class="">
       <Card.Title>{title}</Card.Title>
     </Card.Header>
     <Card.CardContent>
-      <div class="grid grid-cols-2 sm:grid-cols-3 md:grid-cols-1">
+      <div class="grid grid-cols-2 text-sm sm:grid-cols-3 md:grid-cols-1">
         {#each links as link}
           <div class="my-1">
             {#if link.href}

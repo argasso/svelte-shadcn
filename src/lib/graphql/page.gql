@@ -1,37 +1,20 @@
 query Page($handle: String!) {
   page: metaobject(handle: { handle: $handle, type: "page" }) {
-    id
-    handle
-    title: field(key: "title") {
-      value
-    }
-    name: field(key: "name") {
-      value
-    }
+    ...MenuFragment @mask_disable
     content: field(key: "content") {
       value
     }
-    sektioner: field(key: "sektioner") {
+    children: field(key: "sub_pages") {
       references(first: 10) {
         nodes {
-          ...SektionBokgalleri
+          ... on Metaobject {
+            ...MenuFragment @mask_disable
+          }
         }
       }
     }
-    ...Seo
-  }
-  category: metaobject(handle: { handle: $handle, type: "category" }) {
-    id
-    handle
-    title: field(key: "title") {
-      value
-    }
-    name: field(key: "name") {
-      value
-    }
-    content: field(key: "content") {
-      value
-    }
+    ...PageTopFragment
+    ...SectionsFragment @mask_disable
     ...Seo
   }
 }

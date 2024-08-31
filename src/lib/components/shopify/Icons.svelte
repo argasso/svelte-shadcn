@@ -19,9 +19,6 @@
     | 'loading'
     | 'book-missing'
     | 'checked'
-
-  export let width = 24
-  export let height = 24
 </script>
 
 {#if type === 'star'}

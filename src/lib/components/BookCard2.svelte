@@ -28,7 +28,7 @@
 </script>
 
 <div class:loading class="mt-auto w-48 opacity-100">
-  <div class="grid w-40">
+  <div class="grid w-40 drop-shadow-xl">
     <a class="col-start-1 row-start-1 hover:no-underline" {href}>
       <ShopifyImage class="rounded bg-gray-100" {image} {width} />
     </a>

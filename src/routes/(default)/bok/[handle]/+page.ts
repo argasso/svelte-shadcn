@@ -44,21 +44,7 @@ export const _houdini_load = graphql(`
           currencyCode
         }
       }
-      authors: metafield(namespace: "custom", key: "authors") {
-        key
-        value
-        type
-        references(first: 5) {
-          nodes {
-            ... on Metaobject {
-              handle
-              title: field(key: "name") {
-                value
-              }
-            }
-          }
-        }
-      }
+      ...AuthorsFragment
       images(first: 1) {
         nodes {
           url
@@ -74,8 +60,7 @@ export const _houdini_load = graphql(`
           title
           barcode
           price {
-            amount
-            currencyCode
+            ...PriceFragment @mask_disable
           }
           selectedOptions {
             name

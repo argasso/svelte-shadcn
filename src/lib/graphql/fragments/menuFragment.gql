@@ -1,0 +1,10 @@
+fragment MenuFragment on Metaobject {
+  id
+  handle
+  title: field(key: "title") {
+    value
+  }
+  name: field(key: "name") {
+    value
+  }
+}

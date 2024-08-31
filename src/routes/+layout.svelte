@@ -1,60 +1,27 @@
-<script context="module" lang="ts">
-  export type MenuItem = {
-    href: string
-    name: string
-    children: MenuItem[]
-  }
-</script>
-
 <script lang="ts">
-  import '../app.pcss'
-  import { onMount } from 'svelte'
-  import NavLink from '$lib/components/NavLink.svelte'
-  import Logo from '$lib/components/logo/Logo.svelte'
-  import Footer from '$lib/components/Footer.svelte'
   import { browser } from '$app/environment'
-  import { isCartOpen, isMenuOpen, noScroll } from '$lib/stores/store'
-  import { flashCart, initiateCart, refreshCart } from '$lib/shopify'
-  import { resolveHrefs } from '$lib'
-  import ShopifySearch from '$lib/components/shopify/ShopifySearch.svelte'
-  import { ModeWatcher } from 'mode-watcher'
+  import Footer from '$lib/components/Footer.svelte'
   import LightSwitch from '$lib/components/LightSwitch.svelte'
-  import Cart from '$lib/components/shopify/Cart.svelte'
   import MobileNav from '$lib/components/MobileNav.svelte'
+  import NavLink from '$lib/components/NavLink.svelte'
+  import NavMenuMega from '$lib/components/NavMenuMega.svelte'
+  import Logo from '$lib/components/logo/Logo.svelte'
+  import Cart from '$lib/components/shopify/Cart.svelte'
+  import ShopifySearch from '$lib/components/shopify/ShopifySearch.svelte'
   import { Toaster } from '$lib/components/ui/sonner'
+  import { makeMenu } from '$lib/menu'
+  import { initiateCart, refreshCart } from '$lib/shopify'
+  import { isCartOpen, noScroll } from '$lib/stores/store'
+  import { ModeWatcher } from 'mode-watcher'
+  import { onMount } from 'svelte'
+  import '../app.pcss'
 
   export let data
 
-  $: ({ Pages } = data)
+  $: ({ MainMenu } = data)
 
-  $: resolved = resolveHrefs([
-    ...($Pages?.data?.pages.nodes || []),
-    ...($Pages?.data?.categories.nodes || []),
-  ])
-
-  $: menusById = new Map(
-    resolved.map(({ id, title, name, href }) => [
-      id,
-      {
-        name: name ?? title ?? '?',
-        href,
-        children: [] as MenuItem[],
-      },
-    ]),
-  )
-
-  $: menuItems = resolved.reduce((prev, node) => {
-    const child = menusById.get(node.id)
-    if (child) {
-      if (node.parent) {
-        const parent = menusById.get(node.parent)
-        parent?.children.push(child)
-      } else {
-        prev.push(child)
-      }
-    }
-    return prev
-  }, [] as MenuItem[])
+  $: menu = makeMenu($MainMenu.data?.menu)
+  $: menuItems = menu?.children ?? []
 
   $: if (browser) document.body.classList.toggle('noscroll', $noScroll)
 
@@ -104,37 +71,39 @@
 <div data-vaul-drawer-wrapperx class="flex h-dvh flex-col">
   <header
     class:scrolled={scrollY > 0}
-    class="gradient sticky top-0 z-10 flex items-stretch"
+    class="gradient sticky top-0 z-10 flex items-stretch font-sans"
     style:transform="translateY({-top}px)"
     bind:this={headerEl}
   >
     <div class="container flex h-[var(--header-height)] justify-between">
       <nav class="flex items-stretch gap-4">
-        <div class="flex items-center md:hidden">
-          <MobileNav {menuItems} />
-        </div>
+        {#if menu}
+          <div class="flex items-center md:hidden">
+            <MobileNav {menu} />
+          </div>
+        {/if}
         <NavLink href="/" exact={true}>
           <Logo class="h-10 w-28" />
         </NavLink>
         <div class="hidden gap-4 md:flex">
           {#each menuItems as menuItem}
-            <NavLink href={menuItem.href}>{menuItem.name}</NavLink>
+            <NavMenuMega {menuItem}></NavMenuMega>
           {/each}
         </div>
       </nav>
       <nav class="flex shrink-0 items-center gap-0">
-        <ShopifySearch class="mr-2" />
+        <ShopifySearch />
         <LightSwitch />
         <Cart />
       </nav>
     </div>
   </header>
 
-  <main class="flex-1">
+  <main class="-mb-12 flex-1">
     <slot />
   </main>
 
-  <Footer class="flex-0" />
+  <Footer />
 </div>
 
 <style lang="postcss">

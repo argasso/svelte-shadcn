@@ -49,7 +49,11 @@
       <Skeleton class="h-[305px] w-[160px] rounded-sm bg-muted" />
     {:else}
       <a class="col-start-1 row-start-1 hover:no-underline" href={bookUrl(bookThumb.handle)}>
-        <ShopifyImage class="rounded bg-gray-100" image={bookThumb.images.nodes?.[0]} {width} />
+        <ShopifyImage
+          class="rounded bg-gray-100 shadow-lg"
+          image={bookThumb.images.nodes?.[0]}
+          {width}
+        />
       </a>
       {#if bookThumb.variants.nodes[0].discontinued?.value === 'true'}
         <div

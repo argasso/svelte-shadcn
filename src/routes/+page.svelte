@@ -1,19 +1,21 @@
 <script lang="ts">
+  import { MainMenuStore } from '$houdini'
   import Hero2 from '$lib/components/Hero2.svelte'
-  import SektionBokgalleri from '$lib/components/SektionBokgalleri.svelte'
-  import type { PageData } from './$houdini'
+  import Sections from '$lib/components/Sections.svelte'
+  import Wave from '$lib/components/Wave.svelte'
+  import { makeMenu } from '$lib/menu.js'
 
-  export let data: PageData
+  export let data
 
-  $: ({ page } = data)
+  $: ({ Page, MainMenu } = data)
+  $: console.log('page errors', $Page.errors)
+  $: menu = makeMenu($MainMenu.data?.menu)
 </script>
 
-<section class="gradient">
-  <Hero2 />
-</section>
-
-{#if page.sektioner?.references?.nodes}
-  {#each page.sektioner.references.nodes as section, index}
-    <SektionBokgalleri {section} class={index % 2 === 0 ? 'bg-background' : 'bg-card'} />
-  {/each}
+{#if $Page?.data?.page}
+  <section class="gradient">
+    <Hero2 sections={$Page.data.page} />
+  </section>
+  <Wave class="gradient" />
+  <Sections sections={$Page.data.page} {menu} />
 {/if}

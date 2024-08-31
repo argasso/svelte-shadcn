@@ -7,16 +7,22 @@
 
   let className = ''
   export { className as class }
-  // export let filters: NonNullable<Products$result['collection']>['products']['filters'] | null
-  // export let appliedFilters: ProductFilter[]
-  // export let categoryId: string | undefined = undefined
-
   export let filters: EnhancedFilter[]
+  $: console.log('filters updated', filters)
+
+  $: totalCount =
+    filters
+      ?.find((f) => f.id === 'filter.v.availability')
+      ?.values.reduce((prev, curr) => prev + curr.count, 0) ?? 0
+  $: activeCount = filters
+    .map((f) => (f.active ? 1 : 0))
+    .reduce<number>((count, filter) => count + filter, 0)
+  $: console.log('Mobile Filters: filters', filters)
 </script>
 
-<Drawer.Root shouldScaleBackground={false} direction="bottom">
+<Drawer.Root shouldScaleBackground={false} direction="right">
   <Drawer.Trigger asChild let:builder>
-    <Button class={className} builders={[builder]} variant="outline">
+    <Button class={className} builders={[builder]} variant="ghost">
       <svg xmlns="http://www.w3.org/2000/svg" width="1em" height="1em" viewBox="0 0 24 24"
         ><path
           fill="currentColor"
@@ -24,14 +30,26 @@
         /></svg
       >
       Urval
+      {#if activeCount > 0}
+        <div
+          class="min-h-4 min-w-4 rounded-full bg-gray-400 px-1 text-center text-xs text-background"
+        >
+          {activeCount}
+        </div>
+      {/if}
     </Button>
   </Drawer.Trigger>
-  <Drawer.Content direction="bottom" class="flex justify-center">
-    <div class="mx-auto flex h-full max-w-md flex-col gap-4">
-      <ScrollArea class="min-h-0 flex-1 rounded-md border p-0">
-        <div class="mx-auto max-w-md justify-center">
-          <Filters class="w-full" {filters}></Filters>
-        </div>
+  <Drawer.Content direction="right">
+    <div class="flex h-full flex-col">
+      <Drawer.Header class="flex-0 h-14 w-full items-center border-b p-0 sm:text-center">
+        {#if activeCount > 0}
+          <h2 class="m-0 text-lg font-semibold">{totalCount} böcker i urvalet</h2>
+        {:else}
+          <h2 class="m-0 text-lg font-semibold">Urval</h2>
+        {/if}
+      </Drawer.Header>
+      <ScrollArea class="h-full flex-1 px-8 pr-7">
+        <Filters {filters}></Filters>
       </ScrollArea>
     </div>
   </Drawer.Content>

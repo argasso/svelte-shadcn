@@ -31,14 +31,14 @@
       type="checkbox"
       name={value}
       value={checked}
-      class="m-1 h-6 w-6 rounded-sm text-primary"
+      class="m-1 mr-2 h-6 w-6 rounded-sm text-primary"
       on:change={handleChange}
       bind:checked
     />
     {#if key === 'reading_level'}
       <ReadingLevel level={parseInt(label)} />
     {:else}
-      <span class="pl-1">
+      <span>
         {label}
       </span>
     {/if}

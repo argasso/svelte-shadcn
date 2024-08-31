@@ -1,8 +1,8 @@
-import { CartStore, CartLinesUpdateStore, CartCreateStore, CartLinesAddStore } from '$houdini';
-import { derived, writable } from 'svelte/store';
-import { cartQuantity } from './stores/store';
-import { parseJSON } from '.';
+import { CartCreateStore, CartLinesAddStore, CartLinesUpdateStore, CartStore, type PriceFragment$data } from '$houdini';
 import { toast } from "svelte-sonner";
+import { derived, writable } from 'svelte/store';
+import { parseJSON } from '.';
+import { cartQuantity } from './stores/store';
 
 export const cartStore = new CartStore();
 const cartCreateStore = new CartCreateStore();
@@ -15,62 +15,51 @@ export const isCartLoading = derived(
 );
 
 export const flashCart = writable(false);
+export const cartOpen = writable(false);
 
 type AddToCartInfo = {
 	title?: string | null;
-	price: { amount: string; currencyCode: string };
+	price: PriceFragment$data;
 	image?: { url: string } | null;
 };
 export const addToCartInfo = writable<AddToCartInfo | undefined>(undefined);
 
 export const addToCartLoading = writable<string | undefined>(undefined);
 
-// export const getCartItems = async () => {
-//   const cartId = parseJSON(localStorage.getItem('cartId'))
-
-//   try {
-//     const shopifyResponse = await cartStore.fetch({ variables: { cartId }, policy: 'NetworkOnly' })
-//     let sum = 0
-//     shopifyResponse.data?.cart?.lines?.edges?.forEach((d) => {
-//       sum += d.node.quantity
-//     })
-//     cartQuantity.set(sum)
-//     return shopifyResponse
-//   } catch (error) {
-//     console.log(error)
-//   }
-// }
+function isCartExpired(updatedAt: string) {
+	const difference = Date.now() - new Date(updatedAt).getTime();
+	const totalDays = Math.ceil(difference / (1000 * 3600 * 24));
+	return totalDays > 6;
+}
 
 export const refreshCart = async () => {
+	let cart = undefined
 	const cartId = parseJSON(localStorage.getItem('cartId'));
 
-	const response = await cartStore.fetch({ variables: { cartId }, policy: 'CacheAndNetwork' });
+	if (cartId) {
+		const response = await cartStore.fetch({ variables: { cartId } });
+		if (response.data?.cart && !isCartExpired(response.data.cart.updatedAt)) {
+			cart = response.data.cart
+		} 
+	}
+	if (!cart) {
+		const response = await cartCreateStore.mutate({});
+		cart  = response.data?.cartCreate?.cart
+		failOnErrors('Failed to create cart', response.errors);
+		localStorage.setItem('cartId', JSON.stringify(cart?.id));
+		localStorage.setItem('cartUrl', JSON.stringify(cart?.checkoutUrl));
+	}
 	let sum = 0;
-	response.data?.cart?.lines?.edges?.forEach((d) => {
+	cart?.lines?.edges?.forEach((d) => {
 		sum += d.node.quantity;
 	});
 	cartQuantity.set(sum);
-	return response;
+	return cart;
 };
 
 export async function initiateCart() {
 	if (typeof window !== 'undefined') {
-		const cartId = parseJSON(localStorage.getItem('cartId'));
-		const cartCreatedAt = parseJSON(localStorage.getItem('cartCreatedAt'));
-
-		const currentDate = Date.now();
-		const difference = currentDate - cartCreatedAt;
-		const totalDays = Math.ceil(difference / (1000 * 3600 * 24));
-		const cartIdExpired = totalDays > 6;
-		if (!cartId || cartIdExpired) {
-			const response = await cartCreateStore.mutate({});
-			failOnErrors('Failed to create cart', response.errors);
-			localStorage.setItem('cartCreatedAt', JSON.stringify(Date.now()));
-			localStorage.setItem('cartId', JSON.stringify(response.data?.cartCreate?.cart?.id));
-			localStorage.setItem('cartUrl', JSON.stringify(response.data?.cartCreate?.cart?.checkoutUrl));
-		}
-		const { errors } = await refreshCart();
-		failOnErrors('Failed to update cart', errors);
+		await refreshCart();
 		// document.addEventListener('keydown', (e) => {
 		//   const keyCode = e.keyCode
 		//   if (keyCode === 27) {
@@ -110,10 +99,9 @@ export async function addToCart(variantId: string, info?: AddToCartInfo) {
 		description: `${info?.title}`,
 		action: {
 			label: "Visa Varukorg",
-			onClick: () => console.info("Undo")
+			onClick: () => cartOpen.set(true) 
 		}
 	})
-	return refreshCart();
 }
 
 export async function updateCart({
@@ -141,7 +129,7 @@ export async function updateCart({
 
 	failOnErrors('Failed to update cart', response.errors);
 
-	return refreshCart();
+	// return refreshCart();
 }
 
 function failOnErrors(message: string, errors: { message: string }[] | null) {

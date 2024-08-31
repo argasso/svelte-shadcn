@@ -3,10 +3,11 @@
   import * as Drawer from '$lib/components/ui/drawer/index.js'
   import { HamburgerMenu } from 'svelte-radix'
   import NavMenu from './NavMenu.svelte'
-  import type { MenuItem } from '../../routes/+layout.svelte'
   import ScrollArea from './ui/scroll-area/scroll-area.svelte'
+  import type { MenuItem } from '$lib/menu'
+  import Separator from './ui/separator/separator.svelte'
 
-  export let menuItems: MenuItem[]
+  export let menu: MenuItem
 </script>
 
 <Drawer.Root shouldScaleBackground={false} direction="left">
@@ -15,10 +16,14 @@
       <HamburgerMenu />
     </Button>
   </Drawer.Trigger>
-  <Drawer.Content direction="left" class="flex justify-center">
-    <div class="flex h-full flex-1 justify-center">
-      <ScrollArea class="h-full w-full max-w-md py-0">
-        <NavMenu class="w-full" {menuItems}></NavMenu>
+  <Drawer.Content direction="left">
+    <div class="flex h-full flex-col">
+      <Drawer.Header class="flex-0 h-14 w-full items-center border-b p-0 sm:text-center">
+        <h2 class="m-0 text-lg font-semibold">Meny</h2>
+      </Drawer.Header>
+
+      <ScrollArea class="h-full flex-1 px-8">
+        <NavMenu {menu}></NavMenu>
       </ScrollArea>
     </div>
   </Drawer.Content>
