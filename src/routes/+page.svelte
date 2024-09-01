@@ -8,13 +8,12 @@
   export let data
 
   $: ({ Page, MainMenu } = data)
-  $: console.log('page errors', $Page.errors)
   $: menu = makeMenu($MainMenu.data?.menu)
 </script>
 
 {#if $Page?.data?.page}
   <section class="gradient">
-    <Hero2 sections={$Page.data.page} />
+    <Hero2 title={$Page.data.page.title?.value} sections={$Page.data.page} />
   </section>
   <Wave class="gradient" />
   <Sections sections={$Page.data.page} {menu} />

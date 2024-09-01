@@ -36,8 +36,6 @@ export const load = async (event) => {
   //   console.log('hmm', page )
   //   error(404, 'Oj, vi hittar inte det du söker')
   // }
-
-  console.log('page.ts load filters', filters);
   
   if (filters.length > 0) {
     return {

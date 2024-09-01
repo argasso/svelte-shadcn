@@ -334,10 +334,6 @@
 </div>
 
 <style>
-  .author ~ .author::before {
-    content: ', ';
-  }
-
   .book {
     box-shadow: 2px 4px 16px rgba(0, 0, 0, 0.12);
   }

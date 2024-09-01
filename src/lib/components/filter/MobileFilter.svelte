@@ -8,7 +8,7 @@
   let className = ''
   export { className as class }
   export let filters: EnhancedFilter[]
-  $: console.log('filters updated', filters)
+  // $: console.log('filters updated', filters)
 
   $: totalCount =
     filters
@@ -17,7 +17,7 @@
   $: activeCount = filters
     .map((f) => (f.active ? 1 : 0))
     .reduce<number>((count, filter) => count + filter, 0)
-  $: console.log('Mobile Filters: filters', filters)
+  // $: console.log('Mobile Filters: filters', filters)
 </script>
 
 <Drawer.Root shouldScaleBackground={false} direction="right">

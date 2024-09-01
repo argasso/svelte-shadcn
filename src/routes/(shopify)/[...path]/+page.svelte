@@ -29,7 +29,6 @@
   export let data
 
   $: ({ Products, Page, initialFilters, pageInfo, MainMenu } = data)
-  $: console.log('----> page data', Page, $Page)
 
   let products: ProductsResult['nodes'] | undefined
   let productFilters: ProductsResult['filters'] | undefined
@@ -50,8 +49,6 @@
         .filter((v) => v.active)
     }
   }
-  $: console.log('page.svelte products', $Products?.data?.collection?.products.nodes)
-  $: console.log('page.svelte filterss', $Products?.data?.collection?.products.filters)
 
   $: menu = findMenuItem(makeMenu($MainMenu.data?.menu), $pageStore.url.pathname)
   $: links = menu?.children

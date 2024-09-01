@@ -1,15 +1,20 @@
 import { HoudiniClient } from '$houdini'
+import { browser } from '$app/environment'
+import { PUBLIC_SHOPIFY_STOREFRONT_TOKEN, PUBLIC_SHOPIFY_STOREFRONT_URL } from '$env/static/public'
 
+const url = browser ? '/shopify' : PUBLIC_SHOPIFY_STOREFRONT_URL
+const headers = browser ? {} : {
+  headers: {
+    'X-Shopify-Storefront-Access-Token': PUBLIC_SHOPIFY_STOREFRONT_TOKEN ?? '',
+  },
+}
 export default new HoudiniClient({
-  url: '/shopify',
-
+  url,
   // uncomment this to configure the network call (for things like authentication)
   // for more information, please visit here: https://www.houdinigraphql.com/guides/authentication
   fetchParams() {
     return {
-      // headers: {
-      //   'X-Shopify-Storefront-Access-Token': 'ff151810f966c1536e2d3b4fd437f38e',
-      // },
+      ...headers
     }
   },
 })

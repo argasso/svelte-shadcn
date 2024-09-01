@@ -7,7 +7,6 @@ export const load = async (event) => {
   })
 
   const initialFilters = get(Filters).data?.filters?.products.filters ?? []
-  console.log('layout.ts initial filters', initialFilters);
   
 
   return {

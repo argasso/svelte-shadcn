@@ -12,6 +12,8 @@
   export let intro: string = 'Lättare att läsa för barn och ungdomar'
   export let sections: PageTopFragment
 
+  $: titleParts = title?.split('Argasso') ?? []
+
   $: data = fragment(
     sections,
     graphql(`
@@ -53,10 +55,14 @@
       class="flex w-full flex-col items-center justify-center text-center md:w-3/5 md:items-start md:pr-10"
     >
       <h1 class="text-center font-sans text-3xl font-semibold text-white md:text-left md:text-5xl">
-        Upplev böckerna från <span
-          class="bg-gradient-to-r from-pink-300 to-violet-300 bg-clip-text text-transparent"
-          >Argasso</span
-        > bokförlag
+        {#each titleParts as part, index}
+          {#if index > 0}
+            <span class="bg-gradient-to-r from-pink-300 to-violet-300 bg-clip-text text-transparent"
+              >Argasso</span
+            >
+          {/if}
+          {part}
+        {/each}
       </h1>
       <h2 class="my-3 font-serif text-xl font-normal italic text-red-100">{intro}</h2>
       <Button

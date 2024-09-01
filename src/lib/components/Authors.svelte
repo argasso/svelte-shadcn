@@ -45,3 +45,9 @@
     m.fl.
   {/if}
 {/if}
+
+<style>
+  /* .author ~ .author::before {
+    content: ', ';
+  } */
+</style>
