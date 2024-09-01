@@ -89,7 +89,7 @@
 {/if}
 
 <!-- <div class="container mb-10 flex flex-col gap-4 lg:flex-row"> -->
-{#if Products && $Products && !$Products.fetching}
+{#if Products && $Products}
   <Section class="bg-card">
     <div class="mb-3 flex flex-wrap items-center gap-2 text-sm text-gray-500">
       <div class="mr-2">
