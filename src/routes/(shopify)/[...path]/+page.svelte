@@ -5,6 +5,7 @@
   import BookCard from '$lib/components/BookCard4.svelte'
   import LinkList from '$lib/components/LinkList.svelte'
   import Section from '$lib/components/Section.svelte'
+  import Seo from '$lib/components/Seo.svelte'
   import AppliedFilterButton from '$lib/components/filter/AppliedFilterButton.svelte'
   import MobileFilter from '$lib/components/filter/MobileFilter.svelte'
   import {
@@ -54,7 +55,7 @@
   $: links = menu?.children
 
   $: page = $Page.data?.page
-  $: heading = page?.title?.value
+  $: title = page?.title?.value
   $: html = page?.content?.value ? convertSchemaToHtml(JSON.parse(page?.content.value)) : undefined
   $: count = products?.length ?? pageInfo.size
   $: totalCount =
@@ -63,12 +64,16 @@
       ?.values.reduce((prev, curr) => prev + curr.count, 0) ?? 0
 </script>
 
+{#if page}
+  <Seo {page} pageTitle={title} pageContent={page.content?.value} />
+{/if}
+
 {#if !$Page.fetching && $Page.data?.page}
   <Section>
     <div class="flex flex-row gap-10">
       <div class="flex-1">
         <h1 class="mb-8 mt-0 w-full text-center md:text-left">
-          {heading}
+          {title}
         </h1>
         {#if html}
           {@html html}
@@ -91,7 +96,7 @@
 <!-- <div class="container mb-10 flex flex-col gap-4 lg:flex-row"> -->
 {#if Products && $Products}
   <Section class="bg-card">
-    <div class="mb-3 flex flex-wrap items-center gap-2 text-sm text-gray-500">
+    <div class="mb-3 flex flex-wrap items-center gap-2 text-sm text-gray-600">
       <div class="mr-2">
         Visar {count}
         {#if totalCount > pageInfo.size}
@@ -102,21 +107,11 @@
       <div class="my-2 hidden self-stretch md:flex">
         <Separator orientation="vertical" />
       </div>
-      <GridSelect
-        class="w-auto border-none px-2 shadow-none hover:bg-accent hover:text-accent-foreground"
-        key="sort"
-        options={sortOptions}
-        label="Välj ordning"
-      />
+      <GridSelect key="sort" label="Välj ordning" options={sortOptions} />
       <div class="my-2 hidden self-stretch md:flex">
         <Separator orientation="vertical" />
       </div>
-      <GridSelect
-        key="size"
-        suffix="per sida"
-        options={sizeOptions}
-        class="w-auto border-none px-2 shadow-none hover:bg-accent hover:text-accent-foreground"
-      />
+      <GridSelect key="size" label="Antal per sida" options={sizeOptions} suffix="per sida" />
       <div class="my-2 hidden self-stretch md:flex">
         <Separator orientation="vertical" />
       </div>
@@ -173,7 +168,7 @@
         </div>
       {/if}
     </div>
-    <div class="my-3 flex flex-wrap items-center gap-2 pb-6 text-sm text-gray-500">
+    <div class="my-3 flex flex-wrap items-center gap-2 pb-6 text-sm text-gray-600">
       <div class="mr-2">
         Visar {count}
         {#if totalCount > pageInfo.size}
@@ -184,21 +179,11 @@
       <div class="my-2 hidden self-stretch md:flex">
         <Separator orientation="vertical" />
       </div>
-      <GridSelect
-        class="w-auto border-none px-2 shadow-none hover:bg-accent hover:text-accent-foreground"
-        key="sort"
-        options={sortOptions}
-        label="Välj ordning"
-      />
+      <GridSelect key="sort" label="Välj ordning" options={sortOptions} />
       <div class="my-2 hidden self-stretch md:flex">
         <Separator orientation="vertical" />
       </div>
-      <GridSelect
-        key="size"
-        suffix="per sida"
-        options={sizeOptions}
-        class="w-auto border-none px-2 shadow-none hover:bg-accent hover:text-accent-foreground"
-      />
+      <GridSelect key="size" label="Antal per sida" options={sizeOptions} suffix="per sida" />
       <div class="my-2 hidden self-stretch md:flex">
         <Separator orientation="vertical" />
       </div>

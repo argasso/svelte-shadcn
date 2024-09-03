@@ -15,6 +15,6 @@ query Page($handle: String!) {
     }
     ...PageTopFragment
     ...SectionsFragment @mask_disable
-    ...Seo
+    ...SeoFragment
   }
 }

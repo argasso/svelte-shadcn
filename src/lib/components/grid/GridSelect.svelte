@@ -11,7 +11,7 @@
   export let options: (Option | string)[]
   export let suffix: string | undefined = undefined
   export let placeholder: string | undefined = undefined
-  export let label: string | undefined = undefined
+  export let label: string
 
   let opts: Option[]
   $: opts = options
@@ -27,7 +27,10 @@
 </script>
 
 <Select.Root portal={null} {selected} onSelectedChange={(s) => value.set(s?.value ?? '')}>
-  <Select.Trigger class={className}>
+  <Select.Trigger
+    class="w-auto border-none px-2 shadow-none hover:bg-accent hover:text-accent-foreground {className}"
+    aria-label={label}
+  >
     <Select.Value {placeholder} />
   </Select.Trigger>
   <Select.Content sameWidth={false}>

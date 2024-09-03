@@ -3,6 +3,8 @@
   import { authorUrl, onlyMetaobjects } from '$lib'
   import Link from './Link.svelte'
 
+  let className = ''
+  export { className as class }
   export let book: AuthorsFragment
   export let one = false
 
@@ -31,19 +33,21 @@
 </script>
 
 {#if numAuthors > 0}
-  {#each authors as author, index}
-    {#if !one || index === 0}
-      {#if index > 0}
-        &nbsp;&middot;
+  <div class="{className} leading-4x mb-2 font-sans text-xs">
+    {#each authors as author, index}
+      {#if !one || index === 0}
+        {#if index > 0}
+          &nbsp;&middot;
+        {/if}
+        <Link class="" href={authorUrl(author.handle)}>
+          {author.name?.value}
+        </Link>
       {/if}
-      <Link class="font-sans text-xs uppercase" href={authorUrl(author.handle)}>
-        {author.name?.value}
-      </Link>
+    {/each}
+    {#if one && authors.length > 1}
+      m.fl.
     {/if}
-  {/each}
-  {#if one && authors.length > 1}
-    m.fl.
-  {/if}
+  </div>
 {/if}
 
 <style>

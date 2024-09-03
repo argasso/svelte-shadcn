@@ -37,6 +37,7 @@
     {:else}
       <Button
         on:click={addProduct}
+        aria-label="Lägg i varukorg"
         variant="buy"
         size="icon"
         class="group col-start-1 row-start-1 -mb-3 -mr-4  items-center self-end justify-self-end hover:w-auto hover:bg-primary focus:w-auto focus:bg-primary"
@@ -52,11 +53,9 @@
       </Button>
     {/if}
   </div>
-  <Price {price} class="text-base" />
-  <div class="h-28 pt-5">
-    <div class="leading-4x text-xs">
-      <Authors book={bookThumb} one />
-    </div>
+  <Price {price} class="text-xs" />
+  <div class="h-28 pt-3">
+    <Authors book={bookThumb} one class="uppercase" />
     <a {href} class="text-foreground hover:underline">
       <h3 class="my-0 text-base font-semibold leading-6">{title}</h3>
     </a>

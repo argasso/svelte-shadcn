@@ -27,7 +27,7 @@ export const load = async (event) => {
             productMetafield: {
               namespace: 'custom',
               key: 'authors',
-              value: authorData.author.id,
+              value: authorData?.author?.id,
             },
           },
         ],

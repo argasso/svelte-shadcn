@@ -10,8 +10,8 @@
 
 {#if links.length > 0}
   <Card.Root class={className}>
-    <Card.Header class="">
-      <Card.Title>{title}</Card.Title>
+    <Card.Header>
+      <Card.Title tag="h2">{title}</Card.Title>
     </Card.Header>
     <Card.CardContent>
       <div class="grid grid-cols-2 text-sm sm:grid-cols-3 md:grid-cols-1">

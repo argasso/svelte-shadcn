@@ -48,8 +48,9 @@
 
 <div class="flex items-stretch font-sans">
   <Button
+    role="menu"
     variant="link"
-    class={`text-md mb-[2px] mt-[6px] flex h-auto rounded-none border-b-4 border-transparent px-1  text-white hover:border-white hover:border-opacity-70 hover:no-underline ${active ? 'border-white' : ''}`}
+    class={`text-md mb-[2px] mt-[6px] flex h-auto rounded-none border-b-4 border-transparent px-1 text-white hover:border-white hover:border-opacity-70 hover:no-underline ${active ? 'border-white' : ''}`}
     href={menuItem.href}
   >
     <span class="my-auto">{menuItem.name}</span>
@@ -61,9 +62,10 @@
           builders={[builder]}
           variant="ghost"
           size="icon"
-          class="w-5 flex-none self-center bg-transparent hover:bg-white/10 hover:text-white"
+          class="mx-1 w-6 flex-none self-center bg-transparent hover:bg-white/10 hover:text-white"
         >
-          <ChevronDown size="16" /> <span class="sr-only">Ändra theme</span>
+          <ChevronDown size="24" />
+          <span class="sr-only">Öppna meny</span>
         </Button>
       </DropdownMenu.Trigger>
       <DropdownMenu.Content class="mt-2 min-w-44 p-2 font-sans">

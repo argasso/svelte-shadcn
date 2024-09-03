@@ -2,18 +2,19 @@
   import src from './argasso-logo.svg'
 
   let className: string
-
   export { className as class }
 </script>
 
 <!-- <img {src} alt="Argasso" class={className} /> -->
 <svg
+  role="img"
   class="fill-white {className}"
   version="1.0"
   xmlns="http://www.w3.org/2000/svg"
   viewBox="0 0 830.000000 229.000000"
   preserveAspectRatio="xMidYMid meet"
 >
+  <title>Argasso bokförlag</title>
   <g transform="translate(0.000000,229.000000) scale(0.100000,-0.100000)">
     <path
       shape-rendering="auto"
