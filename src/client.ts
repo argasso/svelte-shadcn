@@ -8,12 +8,12 @@ const headers = {
   },
 }
 export default new HoudiniClient({
-  url,
+  url: '/shopify',
   // uncomment this to configure the network call (for things like authentication)
   // for more information, please visit here: https://www.houdinigraphql.com/guides/authentication
-  fetchParams() {
-    return {
-      ...headers
-    }
-  },
+  // fetchParams() {
+  //   return {
+  //     ...headers
+  //   }
+  // },
 })

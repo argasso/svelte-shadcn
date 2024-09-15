@@ -803,6 +803,9 @@ type CartAttributesUpdatePayload {
 
   """The list of errors that occurred from executing the mutation."""
   userErrors: [CartUserError!]!
+
+  """A list of warnings that occurred during the mutation."""
+  warnings: [CartWarning!]!
 }
 
 """
@@ -826,6 +829,9 @@ type CartBillingAddressUpdatePayload {
 
   """The list of errors that occurred from executing the mutation."""
   userErrors: [CartUserError!]!
+
+  """A list of warnings that occurred during the mutation."""
+  warnings: [CartWarning!]!
 }
 
 """
@@ -912,6 +918,9 @@ type CartBuyerIdentityUpdatePayload {
 
   """The list of errors that occurred from executing the mutation."""
   userErrors: [CartUserError!]!
+
+  """A list of warnings that occurred during the mutation."""
+  warnings: [CartWarning!]!
 }
 
 """
@@ -1035,6 +1044,9 @@ type CartCreatePayload {
 
   """The list of errors that occurred from executing the mutation."""
   userErrors: [CartUserError!]!
+
+  """A list of warnings that occurred during the mutation."""
+  warnings: [CartWarning!]!
 }
 
 """
@@ -1294,6 +1306,9 @@ type CartDiscountCodesUpdatePayload {
 
   """The list of errors that occurred from executing the mutation."""
   userErrors: [CartUserError!]!
+
+  """A list of warnings that occurred during the mutation."""
+  warnings: [CartWarning!]!
 }
 
 """Possible error codes that can be returned by `CartUserError`."""
@@ -1426,6 +1441,9 @@ type CartGiftCardCodesUpdatePayload {
 
   """The list of errors that occurred from executing the mutation."""
   userErrors: [CartUserError!]!
+
+  """A list of warnings that occurred during the mutation."""
+  warnings: [CartWarning!]!
 }
 
 """The input fields to create a cart."""
@@ -1625,6 +1643,9 @@ type CartLinesAddPayload {
 
   """The list of errors that occurred from executing the mutation."""
   userErrors: [CartUserError!]!
+
+  """A list of warnings that occurred during the mutation."""
+  warnings: [CartWarning!]!
 }
 
 """Return type for `cartLinesRemove` mutation."""
@@ -1634,6 +1655,9 @@ type CartLinesRemovePayload {
 
   """The list of errors that occurred from executing the mutation."""
   userErrors: [CartUserError!]!
+
+  """A list of warnings that occurred during the mutation."""
+  warnings: [CartWarning!]!
 }
 
 """Return type for `cartLinesUpdate` mutation."""
@@ -1643,6 +1667,9 @@ type CartLinesUpdatePayload {
 
   """The list of errors that occurred from executing the mutation."""
   userErrors: [CartUserError!]!
+
+  """A list of warnings that occurred during the mutation."""
+  warnings: [CartWarning!]!
 }
 
 """The input fields to delete a cart metafield."""
@@ -1705,6 +1732,9 @@ type CartNoteUpdatePayload {
 
   """The list of errors that occurred from executing the mutation."""
   userErrors: [CartUserError!]!
+
+  """A list of warnings that occurred during the mutation."""
+  warnings: [CartWarning!]!
 }
 
 """
@@ -1749,6 +1779,9 @@ type CartPaymentUpdatePayload {
 
   """The list of errors that occurred from executing the mutation."""
   userErrors: [CartUserError!]!
+
+  """A list of warnings that occurred during the mutation."""
+  warnings: [CartWarning!]!
 }
 
 """
@@ -1807,6 +1840,9 @@ type CartSelectedDeliveryOptionsUpdatePayload {
 
   """The list of errors that occurred from executing the mutation."""
   userErrors: [CartUserError!]!
+
+  """A list of warnings that occurred during the mutation."""
+  warnings: [CartWarning!]!
 }
 
 """Return type for `cartSubmitForCompletion` mutation."""
@@ -1843,6 +1879,30 @@ input CartWalletPaymentMethodInput {
 
   """The payment method information for the Shop Pay wallet."""
   shopPayWalletContent: ShopPayWalletContentInput
+}
+
+"""A warning that occurred during a cart mutation."""
+type CartWarning {
+  """The code of the warning."""
+  code: CartWarningCode!
+
+  """The message text of the warning."""
+  message: String!
+
+  """The target of the warning."""
+  target: ID!
+}
+
+"""The code for the cart warning."""
+enum CartWarningCode {
+  """The merchandise does not have enough stock."""
+  MERCHANDISE_NOT_ENOUGH_STOCK
+
+  """The merchandise is out of stock."""
+  MERCHANDISE_OUT_OF_STOCK
+
+  """Gift cards are not available as a payment method."""
+  PAYMENTS_GIFT_CARDS_UNAVAILABLE
 }
 
 """
@@ -2248,6 +2308,24 @@ type ComponentizableCartLine implements BaseCartLine & Node {
   The selling plan associated with the cart line and the effect that each selling plan has on variants when they're purchased.
   """
   sellingPlanAllocation: SellingPlanAllocation
+}
+
+"""Details for count of elements."""
+type Count {
+  """Count of elements."""
+  count: Int!
+
+  """Precision of count, how exact is the value."""
+  precision: CountPrecision!
+}
+
+"""The precision of the value returned by a count field."""
+enum CountPrecision {
+  """The count is at least the value. A limit was reached."""
+  AT_LEAST
+
+  """The count is exactly the value."""
+  EXACT
 }
 
 """A country."""
@@ -5736,6 +5814,9 @@ enum MenuItemType {
   """A collection link."""
   COLLECTIONS
 
+  """A customer account page link."""
+  CUSTOMER_ACCOUNT_PAGE
+
   """A frontpage link."""
   FRONTPAGE
 
@@ -7071,6 +7152,19 @@ enum PageSortKeys {
   UPDATED_AT
 }
 
+"""Type for paginating through multiple sitemap's resources."""
+type PaginatedSitemapResources {
+  """Whether there are more pages to fetch following the current page."""
+  hasNextPage: Boolean!
+
+  """
+  List of sitemap resources for the current page.
+  Note: The number of items varies between 0 and 250 per page.
+  
+  """
+  items: [SitemapResourceInterface!]!
+}
+
 """Settings related to payments."""
 type PaymentSettings {
   """List of the card brands which the shop accepts."""
@@ -7197,8 +7291,40 @@ customization of another product or an extended warranty).
 
 """
 type Product implements HasMetafields & Node & OnlineStorePublishable & Trackable {
+  """
+  A list of variants whose selected options differ with the provided selected options by one, ordered by variant id.
+  If selected options are not provided, adjacent variants to the first available variant is returned.
+  
+  Note that this field returns an array of variants. In most cases, the number of variants in this array will be low.
+  However, with a low number of options and a high number of values per option, the number of variants returned
+  here can be high. In such cases, it recommended to avoid using this field.
+  
+  This list of variants can be used in combination with the `options` field to build a rich variant picker that
+  includes variant availability or other variant information.
+  
+  """
+  adjacentVariants(
+    """Whether to perform case insensitive match on option names and values."""
+    caseInsensitiveMatch: Boolean = false
+
+    """
+    Whether to ignore product options that are not present on the requested product.
+    """
+    ignoreUnknownOptions: Boolean = false
+
+    """
+    The input fields used for a selected option.
+    
+    The input must not contain more than `250` values.
+    """
+    selectedOptions: [SelectedOptionInput!]
+  ): [ProductVariant!]!
+
   """Indicates if at least one product variant is available for sale."""
   availableForSale: Boolean!
+
+  """The taxonomy category for the product."""
+  category: TaxonomyCategory
 
   """List of collections a product belongs to."""
   collections(
@@ -7234,6 +7360,69 @@ type Product implements HasMetafields & Node & OnlineStorePublishable & Trackabl
 
   """The description of the product, complete with HTML formatting."""
   descriptionHtml: HTML!
+
+  """
+  An encoded string containing all option value combinations
+  with a corresponding variant that is currently available for sale.
+  
+  Integers represent option and values:
+  [0,1] represents option_value at array index 0 for the option at array index 0
+  
+  `:`, `,`, ` ` and `-` are control characters.
+  `:` indicates a new option. ex: 0:1 indicates value 0 for the option in position 1, value 1 for the option in position 2.
+  `,` indicates the end of a repeated prefix, mulitple consecutive commas indicate the end of multiple repeated prefixes.
+  ` ` indicates a gap in the sequence of option values. ex: 0 4 indicates option values in position 0 and 4 are present.
+  `-` indicates a continuous range of option values. ex: 0 1-3 4
+  
+  Decoding process:
+  
+  Example options: [Size, Color, Material]
+  Example values: [[Small, Medium, Large], [Red, Blue], [Cotton, Wool]]
+  Example encoded string: "0:0:0,1:0-1,,1:0:0-1,1:1,,2:0:1,1:0,,"
+  
+  Step 1: Expand ranges into the numbers they represent: "0:0:0,1:0 1,,1:0:0 1,1:1,,2:0:1,1:0,,"
+  Step 2: Expand repeated prefixes: "0:0:0,0:1:0 1,1:0:0 1,1:1:1,2:0:1,2:1:0,"
+  Step 3: Expand shared prefixes so data is encoded as a string: "0:0:0,0:1:0,0:1:1,1:0:0,1:0:1,1:1:1,2:0:1,2:1:0,"
+  Step 4: Map to options + option values to determine existing variants:
+  
+  [Small, Red, Cotton] (0:0:0), [Small, Blue, Cotton] (0:1:0), [Small, Blue, Wool] (0:1:1),
+  [Medium, Red, Cotton] (1:0:0), [Medium, Red, Wool] (1:0:1), [Medium, Blue, Wool] (1:1:1),
+  [Large, Red, Wool] (2:0:1), [Large, Blue, Cotton] (2:1:0).
+  
+  
+  """
+  encodedVariantAvailability: String
+
+  """
+  An encoded string containing all option value combinations with a corresponding variant.
+  
+  Integers represent option and values:
+  [0,1] represents option_value at array index 0 for the option at array index 0
+  
+  `:`, `,`, ` ` and `-` are control characters.
+  `:` indicates a new option. ex: 0:1 indicates value 0 for the option in position 1, value 1 for the option in position 2.
+  `,` indicates the end of a repeated prefix, mulitple consecutive commas indicate the end of multiple repeated prefixes.
+  ` ` indicates a gap in the sequence of option values. ex: 0 4 indicates option values in position 0 and 4 are present.
+  `-` indicates a continuous range of option values. ex: 0 1-3 4
+  
+  Decoding process:
+  
+  Example options: [Size, Color, Material]
+  Example values: [[Small, Medium, Large], [Red, Blue], [Cotton, Wool]]
+  Example encoded string: "0:0:0,1:0-1,,1:0:0-1,1:1,,2:0:1,1:0,,"
+  
+  Step 1: Expand ranges into the numbers they represent: "0:0:0,1:0 1,,1:0:0 1,1:1,,2:0:1,1:0,,"
+  Step 2: Expand repeated prefixes: "0:0:0,0:1:0 1,1:0:0 1,1:1:1,2:0:1,2:1:0,"
+  Step 3: Expand shared prefixes so data is encoded as a string: "0:0:0,0:1:0,0:1:1,1:0:0,1:0:1,1:1:1,2:0:1,2:1:0,"
+  Step 4: Map to options + option values to determine existing variants:
+  
+  [Small, Red, Cotton] (0:0:0), [Small, Blue, Cotton] (0:1:0), [Small, Blue, Wool] (0:1:1),
+  [Medium, Red, Cotton] (1:0:0), [Medium, Red, Wool] (1:0:1), [Medium, Blue, Wool] (1:1:1),
+  [Large, Red, Wool] (2:0:1), [Large, Blue, Cotton] (2:1:0).
+  
+  
+  """
+  encodedVariantExistence: String
 
   """
   The featured image for the product.
@@ -7349,6 +7538,28 @@ type Product implements HasMetafields & Node & OnlineStorePublishable & Trackabl
   requiresSellingPlan: Boolean!
 
   """
+  Find an active product variant based on selected options, availability or the first variant.
+  
+  All arguments are optional. If no selected options are provided, the first available variant is returned.
+  If no variants are available, the first variant is returned.
+  
+  """
+  selectedOrFirstAvailableVariant(
+    """Whether to perform case insensitive match on option names and values."""
+    caseInsensitiveMatch: Boolean = false
+
+    """Whether to ignore unknown product options."""
+    ignoreUnknownOptions: Boolean = true
+
+    """
+    The input fields used for a selected option.
+    
+    The input must not contain more than `250` values.
+    """
+    selectedOptions: [SelectedOptionInput!]
+  ): ProductVariant
+
+  """
   A list of a product's available selling plan groups. A selling plan group represents a selling method. For example, 'Subscribe and save' is a selling method where customers pay for goods or services per delivery. A selling plan group contains individual selling plans.
   """
   sellingPlanGroups(
@@ -7439,6 +7650,9 @@ type Product implements HasMetafields & Node & OnlineStorePublishable & Trackabl
     """Sort the underlying list by the given key."""
     sortKey: ProductVariantSortKeys = POSITION
   ): ProductVariantConnection!
+
+  """The total count of variants for this product."""
+  variantsCount: Count
 
   """The product’s vendor name."""
   vendor: String!
@@ -7597,6 +7811,15 @@ The product option value names. For example, "Red", "Blue", and "Green" for a "C
 
 """
 type ProductOptionValue implements Node {
+  """
+  The product variant that combines this option value with the
+  lowest-position option values for all other options.
+  
+  This field will always return a variant, provided a variant including this option value exists.
+  
+  """
+  firstSelectableVariant: ProductVariant
+
   """A globally-unique ID."""
   id: ID!
 
@@ -7838,6 +8061,9 @@ type ProductVariant implements HasMetafields & Node {
     """Reverse the order of the underlying list."""
     reverse: Boolean = false
   ): SellingPlanAllocationConnection!
+
+  """The Shop Pay Installments pricing information for the product variant."""
+  shopPayInstallmentsPricing: ShopPayInstallmentsProductVariantPricing
 
   """The SKU (stock keeping unit) associated with the variant."""
   sku: String
@@ -8568,6 +8794,12 @@ type QueryRoot {
   """The shop associated with the storefront access token."""
   shop: Shop!
 
+  """Contains all fields required to generate sitemaps."""
+  sitemap(
+    """The type of the resource for the sitemap."""
+    type: SitemapType!
+  ): Sitemap!
+
   """A list of redirects for a shop."""
   urlRedirects(
     """Returns the elements that come after the specified cursor."""
@@ -9207,11 +9439,101 @@ type Shop implements HasMetafields & Node {
   """Countries that the shop ships to."""
   shipsToCountries: [CountryCode!]!
 
+  """The Shop Pay Installments pricing information for the shop."""
+  shopPayInstallmentsPricing: ShopPayInstallmentsPricing
+
   """The shop’s subscription policy."""
   subscriptionPolicy: ShopPolicyWithDefault
 
   """The shop’s terms of service."""
   termsOfService: ShopPolicy
+}
+
+"""The financing plan in Shop Pay Installments."""
+type ShopPayInstallmentsFinancingPlan implements Node {
+  """A globally-unique ID."""
+  id: ID!
+
+  """The maximum price to qualify for the financing plan."""
+  maxPrice: MoneyV2!
+
+  """The minimum price to qualify for the financing plan."""
+  minPrice: MoneyV2!
+
+  """The terms of the financing plan."""
+  terms: [ShopPayInstallmentsFinancingPlanTerm!]!
+}
+
+"""The payment frequency for a Shop Pay Installments Financing Plan."""
+enum ShopPayInstallmentsFinancingPlanFrequency {
+  """Monthly payment frequency."""
+  MONTHLY
+
+  """Weekly payment frequency."""
+  WEEKLY
+}
+
+"""The terms of the financing plan in Shop Pay Installments."""
+type ShopPayInstallmentsFinancingPlanTerm implements Node {
+  """The annual percentage rate (APR) of the financing plan."""
+  apr: Int!
+
+  """The payment frequency for the financing plan."""
+  frequency: ShopPayInstallmentsFinancingPlanFrequency!
+
+  """A globally-unique ID."""
+  id: ID!
+
+  """The number of installments for the financing plan."""
+  installmentsCount: Count
+
+  """The type of loan for the financing plan."""
+  loanType: ShopPayInstallmentsLoan!
+}
+
+"""The loan type for a Shop Pay Installments Financing Plan Term."""
+enum ShopPayInstallmentsLoan {
+  """An interest-bearing loan type."""
+  INTEREST
+
+  """A split-pay loan type."""
+  SPLIT_PAY
+
+  """A zero-percent loan type."""
+  ZERO_PERCENT
+}
+
+"""The result for a Shop Pay Installments pricing request."""
+type ShopPayInstallmentsPricing {
+  """The financing plans available for the given price range."""
+  financingPlans: [ShopPayInstallmentsFinancingPlan!]!
+
+  """The maximum price to qualify for financing."""
+  maxPrice: MoneyV2!
+
+  """The minimum price to qualify for financing."""
+  minPrice: MoneyV2!
+}
+
+"""The shop pay installments pricing information for a product variant."""
+type ShopPayInstallmentsProductVariantPricing implements Node {
+  """Whether the product variant is available."""
+  available: Boolean!
+
+  """Whether the product variant is eligible for Shop Pay Installments."""
+  eligible: Boolean!
+
+  """The full price of the product variant."""
+  fullPrice: MoneyV2!
+
+  """The ID of the product variant."""
+  id: ID!
+
+  """The number of payment terms available for the product variant."""
+  installmentsCount: Count
+
+  """The price per term for the product variant."""
+  pricePerTerm: MoneyV2!
 }
 
 """Represents a Shop Pay payment request."""
@@ -9687,6 +10009,106 @@ type ShopPolicyWithDefault {
   url: URL!
 }
 
+"""Contains all fields required to generate sitemaps."""
+type Sitemap {
+  """The number of sitemap's pages for a given type."""
+  pagesCount: Count
+
+  """
+  A list of sitemap's resources for a given type.
+  
+  Important Notes:
+    - The number of items per page varies from 0 to 250.
+    - Empty pages (0 items) may occur and do not necessarily indicate the end of results.
+    - Always check `hasNextPage` to determine if more pages are available.
+  
+  """
+  resources(
+    """The page number to fetch."""
+    page: Int!
+  ): PaginatedSitemapResources
+}
+
+"""Represents a sitemap's image."""
+type SitemapImage {
+  """Image's alt text."""
+  alt: String
+
+  """Path to the image."""
+  filepath: String
+
+  """The date and time when the image was updated."""
+  updatedAt: DateTime!
+}
+
+"""Represents a sitemap resource that is not a metaobject."""
+type SitemapResource implements SitemapResourceInterface {
+  """Resource's handle."""
+  handle: String!
+
+  """Resource's image."""
+  image: SitemapImage
+
+  """Resource's title."""
+  title: String
+
+  """The date and time when the resource was updated."""
+  updatedAt: DateTime!
+}
+
+"""Represents the common fields for all sitemap resource types."""
+interface SitemapResourceInterface {
+  """Resource's handle."""
+  handle: String!
+
+  """The date and time when the resource was updated."""
+  updatedAt: DateTime!
+}
+
+"""
+A SitemapResourceMetaobject represents a metaobject with
+[the `renderable` capability](https://shopify.dev/docs/apps/build/custom-data/metaobjects/use-metaobject-capabilities#render-metaobjects-as-web-pages).
+
+"""
+type SitemapResourceMetaobject implements SitemapResourceInterface {
+  """Resource's handle."""
+  handle: String!
+
+  """
+  The type of the metaobject. Defines the namespace of its associated metafields.
+  """
+  type: String!
+
+  """The date and time when the resource was updated."""
+  updatedAt: DateTime!
+}
+
+"""The types of resources potentially present in a sitemap."""
+enum SitemapType {
+  """Articles present in the sitemap."""
+  ARTICLE
+
+  """Blogs present in the sitemap."""
+  BLOG
+
+  """Collections present in the sitemap."""
+  COLLECTION
+
+  """
+  Metaobjects present in the sitemap. Only metaobject types with the
+  [`renderable` capability](https://shopify.dev/docs/apps/build/custom-data/metaobjects/use-metaobject-capabilities#render-metaobjects-as-web-pages)
+  are included in sitemap.
+  
+  """
+  METAOBJECT
+
+  """Pages present in the sitemap."""
+  PAGE
+
+  """Products present in the sitemap."""
+  PRODUCT
+}
+
 """
 The availability of a product variant at a particular location.
 Local pick-up must be enabled in the  store's shipping settings, otherwise this will return an empty result.
@@ -9911,6 +10333,21 @@ type Swatch {
 }
 
 """
+The taxonomy category for the product.
+
+"""
+type TaxonomyCategory implements Node {
+  """All parent nodes of the current taxonomy category."""
+  ancestors: [TaxonomyCategory!]!
+
+  """A static identifier for the taxonomy category."""
+  id: ID!
+
+  """The localized name of the taxonomy category."""
+  name: String!
+}
+
+"""
 Represents a resource that you can track the origin of the search traffic.
 """
 interface Trackable {
@@ -10069,9 +10506,7 @@ type UserError implements DisplayableError {
   message: String!
 }
 
-"""
-Represents an error that happens during execution of a customer mutation.
-"""
+"""Error codes for failed Shop Pay payment request session mutations."""
 type UserErrorsShopPayPaymentRequestSessionUserErrors implements DisplayableError {
   """The error code."""
   code: UserErrorsShopPayPaymentRequestSessionUserErrorsCode

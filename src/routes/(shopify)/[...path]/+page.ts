@@ -40,7 +40,7 @@ export const load = async (event) => {
   if (filters.length > 0) {
     return {
       ...(await load_Page({ event, variables: { handle } })),
-      ...(await load_Products({ event, variables: { filters, first, sortKey, reverse } })),
+      ...(await load_Products({ event, variables: { filters, first, sortKey, reverse }, policy: 'CacheAndNetwork' })),
       initialFilters,
       pageInfo: { 
         size: first,

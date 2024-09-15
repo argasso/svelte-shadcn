@@ -1,8 +1,6 @@
 import type { Context, Config } from "@netlify/edge-functions";
 
 export default async (request: Request, context: Context) => {
-  console.log('in /shopify', request);
-  
   const url = Netlify.env.get("PUBLIC_SHOPIFY_STOREFRONT_URL");
   const token = Netlify.env.get("PUBLIC_SHOPIFY_STOREFRONT_TOKEN")
   const rsp = await fetch(url, {

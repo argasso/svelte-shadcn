@@ -4,7 +4,7 @@ query Products(
   $filters: [ProductFilter!]
   $first: Int
 ) {
-  collection(handle: "frontpage") @cache(policy: NetworkOnly) {
+  collection(handle: "frontpage") {
     products(sortKey: $sortKey, reverse: $reverse, filters: $filters, first: $first) @paginate {
       nodes {
         id
